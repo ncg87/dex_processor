@@ -3,47 +3,72 @@ from typing import Optional, Dict, Any
 
 @dataclass
 class BaseTransaction:
-    id: str
-    dex_id: str
-    block_number: int
-    timestamp: int
-    gas_used: str
-    gas_price: str
+    id: str             # Transaction ID
+    dex_id: str         # DEX ID
+    block_number: int   # Block number
+    timestamp: int      # Timestamp
+    gas_used: str       # Gas used
+    gas_price: str      # Gas price
     
 @dataclass
-class SwapEvent(BaseTransaction):
-    pool_id: str
-    token0_symbol: str
-    token1_symbol: str
-    token0_decimals: int
-    token1_decimals: int
-    fee_tier: int
-    liquidity: str
-    sqrt_price: str
-    token0_price: str
-    token1_price: str
-    sender: str
-    recipient: str
-    origin: str
-    amount0: str
-    amount1: str
-    amount_usd: str
-    sqrt_price_x96: str
-    tick: int
-    log_index: int
+class SwapEvent:
+    parent_transaction: BaseTransaction # Info about the parent transaction
+    
+    timestamp: int                      # Timestamp of the swap
+    id: str                             # Swap transaction ID   
+    token0_symbol: str                  # Token 0 symbol
+    token1_symbol: str                  # Token 1 symbol
+    amount0: str                        # Amount of token 0 in swap
+    amount1: str                        # Amount of token 1 in swap
+    amount_usd: str                     # Amount of USD of the swap (amount0 * token0_price or amount1 * token1_price)
+    sender: str                         # Address of the sender
+    recipient: str                      # Address of the recipient
+    origin: str                         # Address of the origin
+    fee_tier: int                       # Fee tier
+    liquidity: str                      # Liquidity
     
 @dataclass
-class MintEvent(BaseTransaction):
+class MintEvent:
+    parent_transaction: BaseTransaction # Info about the parent transaction
+    
+    timestamp: int                      # Timestamp of the mint
+    id: str                             # Mint transaction ID
+    token0_symbol: str                  # Token 0 symbol
+    token1_symbol: str                  # Token 1 symbol
+    amount0: str                        # Amount of token 0 in mint
+    amount1: str                        # Amount of token 1 in mint
+    amount_usd: str                     # Amount of USD of the mint (amount0 * token0_price or amount1 * token1_price)
+    sender: str                         # Address of the sender
+    owner: str                          # Address of the owner
+    origin: str                         # Address of the origin
+    fee_tier: int                       # Fee tier
+    liquidity: str                      # Liquidity
+    
+@dataclass
+class BurnEvent:
+    parent_transaction: BaseTransaction # Info about the parent transaction
+    
+    timestamp: int                      # Timestamp of the burn
+    id: str                             # Burn transaction ID
+    token0_symbol: str                  # Token 0 symbol
+    token1_symbol: str                  # Token 1 symbol
+    amount0: str                        # Amount of token 0 in burn
+    amount1: str                        # Amount of token 1 in burn
+    amount_usd: str                     # Amount of USD of the burn (amount0 * token0_price or amount1 * token1_price)
+    sender: str                         # Address of the sender
+    owner: str                          # Address of the owner
+    origin: str                         # Address of the origin
+    fee_tier: int                       # Fee tier
+    liquidity: str                      # Liquidity
+
+# Worry about flash and collect events later, think I may need premium
+
+@dataclass
+class FlashEvent:
+    parent_transaction: BaseTransaction # Info about the parent transaction
     pass
 
 @dataclass
-class BurnEvent(BaseTransaction):
-    pass
-
-@dataclass
-class FlashEvent(BaseTransaction):
-    pass
-
-@dataclass
-class CollectEvent(BaseTransaction):
+class CollectEvent:
+    parent_transaction: BaseTransaction # Info about the parent transaction
     pass
