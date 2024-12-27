@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Dict, Any
-from ..database.models import BaseTransaction
+from database.models import BaseTransaction
 
 class BaseProcessor(ABC):
     def __init__(self, dex_id: str):
