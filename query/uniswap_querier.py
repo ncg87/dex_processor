@@ -1,6 +1,6 @@
 import logging
 from .queries import get_transactions_query
-
+from .base_querier import BaseQuerier
 
 class UniswapQuerier(BaseQuerier):
     def __init__(self):
