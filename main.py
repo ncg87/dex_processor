@@ -1,6 +1,21 @@
 from database.database import Database
 from config.settings import Settings
 from datetime import datetime, timedelta
+import logging
+
+def configure_logging():
+    """Configure logging for the application"""
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.StreamHandler(),  # Console handler
+            logging.FileHandler('dex_processor.log')  # File handler
+        ]
+    )
+    
+    # Set specific log levels for different modules if needed
+    logging.getLogger('processor').setLevel(logging.DEBUG)
 
 def main():
     # Initialize database
