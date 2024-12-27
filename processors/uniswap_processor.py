@@ -1,14 +1,36 @@
 from typing import Dict, Any, List
 from .base_processor import BaseProcessor
 from database.models import BaseTransaction, SwapEvent, MintEvent, CollectEvent, BurnEvent, FlashEvent
-from dataclasses import asdict
+import logging
 
-class UniswapProcessor(BaseProcessor):
+logger = logging.getLogger(__name__)
+
+
+class UniswapV3Processor(BaseProcessor):
     def __init__(self):
         super().__init__('uniswap_v3')
+        self.logger.info("Initialized UniswapV3Processor")
     
-    def process_response(self, response_data: Dict[str, Any]) -> tuple[BaseTransaction, Dict[str, list]]:
-        transaction_data = response_data['data']['transactions'][0]
+    def process_bulk_responses(self, response_data: Dict[str, Any]) -> List[Dict[str, list]]:
+        self.logger.debug(f"Processing bulk responses with {len(response_data.get('data', {}).get('transactions', []))} transactions")
+        # Initialize results for each event type
+        results = [[],[],[],[],[]]
+        
+        # Iterate through each transaction in the response
+        for transaction_data in response_data['data']['transactions']:
+            events = self.process_response(transaction_data)
+            
+            # Append events to results
+            results[0].extend(events['swaps']) # Add swaps to results
+            results[1].extend(events['mints']) # Add mints to results
+            results[3].extend(events['burns']) # Add burns to results
+            results[2].extend(events['collects']) # Add collects to results
+            results[4].extend(events['flashs']) # Add flashs to results
+            
+        self.logger.debug(f"Processed {len(results[0])} swaps, {len(results[1])} mints, {len(results[2])} collects, {len(results[3])} burns, {len(results[4])} flashs for a total of {len(results[0]) + len(results[1]) + len(results[2]) + len(results[3]) + len(results[4])} events.")
+        return results
+    
+    def process_response(self, transaction_data: Dict[str, Any]) -> Dict[str, list]:
         
         # Create base transaction
         transaction = BaseTransaction(
@@ -23,18 +45,18 @@ class UniswapProcessor(BaseProcessor):
         events = {
             'swaps': self._process_swaps(transaction_data.get('swaps', []), transaction),
             'mints': self._process_mints(transaction_data.get('mints', []), transaction),
-            'collects': self._process_collects(transaction_data.get('collects', []), transaction),
             'burns': self._process_burns(transaction_data.get('burns', []), transaction),
+            'collects': self._process_collects(transaction_data.get('collects', []), transaction),
             'flashs': self._process_flashs(transaction_data.get('flashed', []), transaction)
         }
         
-        return transaction, events
+        return events
     
     def _process_swaps(self, swaps_data: List[Dict], transaction: BaseTransaction) -> List[SwapEvent]:
         
         # Check if there are any swap transactions, check for none
         if not len(swaps_data) > 0:
-            return None
+            return []
         
         # Get info from the swap transaction
         swap_transactions = []
@@ -63,7 +85,7 @@ class UniswapProcessor(BaseProcessor):
         
         # Check if there are any mint transactions, check for none
         if not len(mints_data) > 0:
-            return None
+            return []
         
         mint_transactions = []
         for mint in mints_data:
@@ -76,7 +98,6 @@ class UniswapProcessor(BaseProcessor):
                 amount0 = mint['amount0'],
                 amount1 = mint['amount1'],
                 amount_usd = mint['amountUSD'],
-                sender = mint['sender'],
                 owner = mint['owner'],
                 origin = mint['origin'],
                 fee_tier = mint['pool']['feeTier'],
@@ -90,7 +111,7 @@ class UniswapProcessor(BaseProcessor):
         
         # Check if there are any burn transactions, check for none
         if not len(burns_data) > 0:
-            return None
+            return []
     
         burn_transactions = []
         for burn in burns_data:
@@ -103,7 +124,6 @@ class UniswapProcessor(BaseProcessor):
                 amount0 = burn['amount0'],
                 amount1 = burn['amount1'],
                 amount_usd = burn['amountUSD'],
-                sender = burn['sender'],
                 owner = burn['owner'],
                 origin = burn['origin'],
                 fee_tier = burn['pool']['feeTier'],
@@ -117,7 +137,7 @@ class UniswapProcessor(BaseProcessor):
         
         # Check if there are any collect transactions, check for none
         if not len(collects_data) > 0:
-            return None
+            return []
         
         pass
     
@@ -135,7 +155,7 @@ class UniswapProcessor(BaseProcessor):
         
         # Check if there are any flash transactions, check for none
         if not len(flashs_data) > 0:
-            return None
+            return []
         
         pass
         

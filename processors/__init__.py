@@ -1,9 +1,9 @@
 from .base_processor import BaseProcessor
 from .processor_factory import ProcessorFactory
-from .uniswap_processor import UniswapProcessor
+from .uniswap_processor import UniswapV3Processor
 
 __all__ = [
     'BaseProcessor',
     'ProcessorFactory',
-    'UniswapProcessor'
+    'UniswapV3Processor'
 ]

@@ -39,7 +39,6 @@ class MintEvent:
     amount0: str                        # Amount of token 0 in mint
     amount1: str                        # Amount of token 1 in mint
     amount_usd: str                     # Amount of USD of the mint (amount0 * token0_price or amount1 * token1_price)
-    sender: str                         # Address of the sender
     owner: str                          # Address of the owner
     origin: str                         # Address of the origin
     fee_tier: int                       # Fee tier
@@ -57,7 +56,6 @@ class BurnEvent:
     amount0: str                        # Amount of token 0 in burn
     amount1: str                        # Amount of token 1 in burn
     amount_usd: str                     # Amount of USD of the burn (amount0 * token0_price or amount1 * token1_price)
-    sender: str                         # Address of the sender
     owner: str                          # Address of the owner
     origin: str                         # Address of the origin
     fee_tier: int                       # Fee tier
