@@ -26,6 +26,7 @@ class SwapEvent:
     origin: str                         # Address of the origin
     fee_tier: int                       # Fee tier
     liquidity: str                      # Liquidity
+    dex_id: str                         # DEX ID
     
 @dataclass
 class MintEvent:
@@ -43,7 +44,8 @@ class MintEvent:
     origin: str                         # Address of the origin
     fee_tier: int                       # Fee tier
     liquidity: str                      # Liquidity
-    
+    dex_id: str                         # DEX ID
+
 @dataclass
 class BurnEvent:
     parent_transaction: BaseTransaction # Info about the parent transaction
@@ -60,6 +62,7 @@ class BurnEvent:
     origin: str                         # Address of the origin
     fee_tier: int                       # Fee tier
     liquidity: str                      # Liquidity
+    dex_id: str                         # DEX ID
 
 # Worry about flash and collect events later, think I may need premium
 

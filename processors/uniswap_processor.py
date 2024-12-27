@@ -53,6 +53,7 @@ class UniswapProcessor(BaseProcessor):
                 origin = swap['origin'],
                 fee_tier = swap['pool']['feeTier'],
                 liquidity = swap['pool']['liquidity'],
+                dex_id = self.dex_id
             )
             swap_transactions.append(swap_transaction)
             
@@ -80,27 +81,11 @@ class UniswapProcessor(BaseProcessor):
                 origin = mint['origin'],
                 fee_tier = mint['pool']['feeTier'],
                 liquidity = mint['pool']['liquidity'],
+                dex_id = self.dex_id
             )
             mint_transactions.append(mint_transaction)
         return mint_transactions
 
-    def _process_collects(self, collects_data: List[Dict], transaction: BaseTransaction) -> List[CollectEvent]:
-        
-        # Check if there are any collect transactions, check for none
-        if not len(collects_data) > 0:
-            return None
-        
-        pass
-    
-        collect_transactions = []
-        for collect in collects_data:
-            collect_transaction = CollectEvent(
-                parent_transaction = transaction,
-                **collect
-            )
-            collect_transactions.append(collect_transaction)
-        return collect_transactions
-    
     def _process_burns(self, burns_data: List[Dict], transaction: BaseTransaction) -> List[BurnEvent]:
         
         # Check if there are any burn transactions, check for none
@@ -123,9 +108,28 @@ class UniswapProcessor(BaseProcessor):
                 origin = burn['origin'],
                 fee_tier = burn['pool']['feeTier'],
                 liquidity = burn['pool']['liquidity'],
+                dex_id = self.dex_id
             )
             burn_transactions.append(burn_transaction)
         return burn_transactions
+    
+    def _process_collects(self, collects_data: List[Dict], transaction: BaseTransaction) -> List[CollectEvent]:
+        
+        # Check if there are any collect transactions, check for none
+        if not len(collects_data) > 0:
+            return None
+        
+        pass
+    
+        collect_transactions = []
+        for collect in collects_data:
+            collect_transaction = CollectEvent(
+                parent_transaction = transaction,
+                **collect
+            )
+            collect_transactions.append(collect_transaction)
+        return collect_transactions
+    
     
     def _process_flashs(self, flashs_data: List[Dict], transaction: BaseTransaction) -> List[FlashEvent]:
         
