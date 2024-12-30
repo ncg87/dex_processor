@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Query
 from typing import Optional
-from database import Database
+from database.database import Database
 from config.settings import Settings
 from analysis.volume_tracker import VolumeTracker
 
