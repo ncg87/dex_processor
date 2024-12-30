@@ -1,3 +1,9 @@
+import sys
+import os
+
+# Add the parent directory to the Python import path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from fastapi import FastAPI, Query
 from typing import Optional
 from database.database import Database
