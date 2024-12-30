@@ -2,7 +2,13 @@ from typing import Dict, Any
 from datetime import timedelta
 import dotenv
 class Settings:
-    POSTGRES_CONFIG = dotenv.get_key('.env', 'POSTGRES_CONFIG')
+    POSTGRES_CONFIG = {
+        "dbname": dotenv.get_key('.env', 'DB_NAME'),
+        "user": dotenv.get_key('.env', 'DB_USER'),
+        "password": dotenv.get_key('.env', 'DB_PASSWORD'),
+        "host": dotenv.get_key('.env', 'DB_HOST'),
+        "port": int(dotenv.get_key('.env', 'DB_PORT')),
+}
     BATCH_SIZE = 1000
     
     # Time-based partition settings
