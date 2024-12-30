@@ -44,16 +44,17 @@ class Database:
         
         try:
             # Need to connect with autocommit for database creation
-            with psycopg2.connect(**config) as conn:
-                conn.autocommit = True
-                with conn.cursor() as cur:
-                    # Check if database exists
-                    cur.execute("SELECT 1 FROM pg_database WHERE datname = %s",
-                            (target_db,))
-                    if not cur.fetchone():
-                        # Create database if it doesn't exist
-                        cur.execute(f"CREATE DATABASE {target_db}")
-                        logger.info(f"Created database {target_db}")
+            conn = psycopg2.connect(**config)
+            conn.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
+
+            with conn.cursor() as cur:
+                # Check if database exists
+                cur.execute("SELECT 1 FROM pg_database WHERE datname = %s",
+                        (target_db,))
+                if not cur.fetchone():
+                    # Create database if it doesn't exist
+                    cur.execute(f"CREATE DATABASE {target_db}")
+                    logger.info(f"Created database {target_db}")
         except Exception as e:
             logger.error(f"Error ensuring database exists: {str(e)}", exc_info=True)
             raise
