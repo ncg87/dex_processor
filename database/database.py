@@ -38,7 +38,7 @@ class Database:
         """Ensure the database exists, create it if it doesn't"""
         # Connect to default postgres database
         config = self.config.copy()
-        config['database'] = 'postgres'  # Connect to default database
+        config['dbname'] = 'postgres'  # Connect to default database
         
         try:
             # Need to connect with autocommit for database creation
