@@ -13,6 +13,7 @@ class Database:
         """Initialize database connection"""
         self.config = config
         self.schema = PostgresSchema()
+        self.ensure_database_exists()
         self._init_db()
         logger.info("Database initialized")
 
@@ -32,7 +33,30 @@ class Database:
         except Exception as e:
             logger.error(f"Error initializing database schema: {str(e)}", exc_info=True)
             raise
-
+    
+    def ensure_database_exists(self):
+        """Ensure the database exists, create it if it doesn't"""
+        # Connect to default postgres database
+        config = self.config.copy()
+        config['database'] = 'postgres'  # Connect to default database
+        
+        try:
+            # Need to connect with autocommit for database creation
+            with psycopg2.connect(**config) as conn:
+                conn.autocommit = True
+                with conn.cursor() as cur:
+                    # Check if database exists
+                    cur.execute("SELECT 1 FROM pg_database WHERE datname = %s",
+                            (self.config['database'],))
+                    if not cur.fetchone():
+                        # Create database if it doesn't exist
+                        dbname = self.config['database']
+                        cur.execute(f"CREATE DATABASE {dbname}")
+                        logger.info(f"Created database {dbname}")
+        except Exception as e:
+            logger.error(f"Error ensuring database exists: {str(e)}", exc_info=True)
+            raise
+    
     def ensure_partitions(self, start_date: datetime, end_date: datetime):
         """Ensure partitions exist for the given date range"""
         try:
