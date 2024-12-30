@@ -47,7 +47,7 @@ class Database:
                 with conn.cursor() as cur:
                     # Check if database exists
                     cur.execute("SELECT 1 FROM pg_database WHERE datname = %s",
-                            (self.config['database'],))
+                            (self.config['dbname'],))
                     if not cur.fetchone():
                         # Create database if it doesn't exist
                         dbname = self.config['database']
