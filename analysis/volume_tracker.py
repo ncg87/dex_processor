@@ -15,6 +15,7 @@ class VolumeTracker:
         """
         Calculate the total volume of each crypto using swaps, mints, and burns data.
         """
+        
         self.logger.info(f"Calculating volume from {start_time} to {end_time} for DEX {dex_id or 'all DEXes'}")
         
         # Fetch events
