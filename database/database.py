@@ -38,6 +38,8 @@ class Database:
         """Ensure the database exists, create it if it doesn't"""
         # Connect to default postgres database
         config = self.config.copy()
+        
+        target_db = config.pop('dbname', None)
         config['dbname'] = 'postgres'  # Connect to default database
         
         try:
@@ -47,12 +49,11 @@ class Database:
                 with conn.cursor() as cur:
                     # Check if database exists
                     cur.execute("SELECT 1 FROM pg_database WHERE datname = %s",
-                            (self.config['dbname'],))
+                            (target_db,))
                     if not cur.fetchone():
                         # Create database if it doesn't exist
-                        dbname = self.config['database']
-                        cur.execute(f"CREATE DATABASE {dbname}")
-                        logger.info(f"Created database {dbname}")
+                        cur.execute(f"CREATE DATABASE {target_db}")
+                        logger.info(f"Created database {target_db}")
         except Exception as e:
             logger.error(f"Error ensuring database exists: {str(e)}", exc_info=True)
             raise
