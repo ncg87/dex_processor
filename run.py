@@ -6,7 +6,7 @@ from config.settings import Settings
 from factory.pipeline_factory import PipelineFactory
 
 logging.basicConfig(
-    filename='continuous_pipeline.log',
+    filename='maintenance.log',
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
