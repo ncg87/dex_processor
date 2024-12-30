@@ -1,48 +1,43 @@
 from database.database import Database
 from config.settings import Settings
 from datetime import datetime, timedelta
+from pipeline import DataPipeline
 import logging
 
-def configure_logging():
-    """Configure logging for the application"""
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.StreamHandler(),  # Console handler
-            logging.FileHandler('dex_processor.log')  # File handler
-        ]
-    )
-    
-    # Set specific log levels for different modules if needed
-    logging.getLogger('processor').setLevel(logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 def main():
-    # Initialize database
-    db = Database(Settings.POSTGRES_CONFIG)
-    
-    # Ensure partitions exist for the next year
-    start_date = datetime.now()
-    end_date = start_date + timedelta(days=365)
-    db.ensure_partitions(start_date, end_date)
-    
-    # Example query with statistics
-    stats = db.get_statistics(
-        start_time=datetime.now() - timedelta(days=7),
-        end_time=datetime.now(),
-        dex_id='uniswap_v3',
-        interval='1 hour'
+    # Setup logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
     
-    # Example time-range query with token pair filtering
-    swaps = db.query_by_timerange(
-        start_time=datetime.now() - timedelta(hours=24),
-        end_time=datetime.now(),
-        dex_id='uniswap_v3',
-        event_types=['swaps'],
-        token_pair=('USDC', 'ETH'),
-        limit=100
-    )
+    # Database connection parameters
+    db_params = {
+        'dbname': 'your_db_name',
+        'user': 'your_user',
+        'password': 'your_password',
+        'host': 'localhost',
+        'port': '5432'
+    }
+    
+    try:
+        # Initialize pipeline
+        pipeline = DataPipeline(db_params)
+        
+        # Process yesterday's data
+        yesterday = datetime.now() - timedelta(days=1)
+        total_tx, total_events = pipeline.process_day(yesterday)
+        
+        logger.info(
+            f"Successfully processed {yesterday.date()}: "
+            f"{total_tx} transactions, {total_events} events"
+        )
+        
+    except Exception as e:
+        logger.error(f"Pipeline failed: {str(e)}", exc_info=True)
+        raise
 
 if __name__ == "__main__":
     main()

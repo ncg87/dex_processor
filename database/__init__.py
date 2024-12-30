@@ -8,6 +8,7 @@ from .models import (
     CollectEvent
 )
 from .schema import PostgresSchema
+import psycopg2
 
 __all__ = [
     'Database',

@@ -1,14 +1,14 @@
 from dataclasses import dataclass
-from typing import Optional, Dict, Any
+from typing import Optional
 
 @dataclass
 class BaseTransaction:
-    id: str             # Transaction ID
-    dex_id: str         # DEX ID
-    block_number: int   # Block number
-    timestamp: int      # Timestamp
-    gas_used: str       # Gas used
-    gas_price: str      # Gas price
+    id: str                              # Transaction ID
+    dex_id: str                          # DEX ID
+    block_number: int                   # Block number
+    timestamp: int                      # Timestamp
+    gas_used: Optional[str] = None      # Gas used
+    gas_price: Optional[str] = None     # Gas price
     
 @dataclass
 class SwapEvent:
@@ -23,10 +23,10 @@ class SwapEvent:
     amount_usd: str                     # Amount of USD of the swap (amount0 * token0_price or amount1 * token1_price)
     sender: str                         # Address of the sender
     recipient: str                      # Address of the recipient
-    origin: str                         # Address of the origin
-    fee_tier: int                       # Fee tier
-    liquidity: str                      # Liquidity
     dex_id: str                         # DEX ID
+    origin: Optional[str] = None        # Address of the origin
+    fee_tier: Optional[int] = None      # Fee tier
+    liquidity: Optional[str] = None     # Liquidity
     
 @dataclass
 class MintEvent:
@@ -40,10 +40,10 @@ class MintEvent:
     amount1: str                        # Amount of token 1 in mint
     amount_usd: str                     # Amount of USD of the mint (amount0 * token0_price or amount1 * token1_price)
     owner: str                          # Address of the owner
-    origin: str                         # Address of the origin
-    fee_tier: int                       # Fee tier
-    liquidity: str                      # Liquidity
     dex_id: str                         # DEX ID
+    origin: Optional[str] = None        # Address of the origin
+    fee_tier: Optional[int] = None      # Fee tier
+    liquidity: Optional[str] = None     # Liquidity
 
 @dataclass
 class BurnEvent:
@@ -57,10 +57,10 @@ class BurnEvent:
     amount1: str                        # Amount of token 1 in burn
     amount_usd: str                     # Amount of USD of the burn (amount0 * token0_price or amount1 * token1_price)
     owner: str                          # Address of the owner
-    origin: str                         # Address of the origin
-    fee_tier: int                       # Fee tier
-    liquidity: str                      # Liquidity
     dex_id: str                         # DEX ID
+    origin: Optional[str] = None        # Address of the origin
+    fee_tier: Optional[int] = None      # Fee tier
+    liquidity: Optional[str] = None     # Liquidity
 
 # Worry about flash and collect events later, think I may need premium
 

@@ -1,6 +1,7 @@
 from .base_processor import BaseProcessor
 from .processor_factory import ProcessorFactory
-from .uniswap_processor import UniswapV3Processor
+from .processors.uniswap_v3_processor import UniswapV3Processor
+
 
 __all__ = [
     'BaseProcessor',

@@ -1,4 +1,4 @@
-def get_transactions_query():
+def get_uniswap_v3_query():
     """
     Query to fetch transactions within a time period.
     """
@@ -187,4 +187,116 @@ def get_transactions_query():
             }
         }
         }
+    """
+def get_uniswap_v2_query():
+    """
+    Query to fetch transactions within a time period from Uniswap V2.
+    """
+    return """
+    query GetSwapsBurnsMints($startTimestamp: Int!, $endTimestamp: Int!, $skip: Int!) {
+        transactions(
+            first: 1000
+            skip: $skip
+            where: { timestamp_gte: $startTimestamp, timestamp_lte: $endTimestamp }
+            orderBy: timestamp
+            orderDirection: asc
+        ) {
+            id
+            blockNumber
+            timestamp
+
+            # Swap events
+            swaps {
+            id
+            transaction {
+                id
+            }
+            timestamp
+            pair {
+                id
+                token0 {
+                id
+                symbol
+                decimals
+                }
+                token1 {
+                id
+                symbol
+                decimals
+                }
+            }
+            sender
+            from
+            amount0In
+            amount1In
+            amount0Out
+            amount1Out
+            to
+            logIndex
+            amountUSD
+            }
+
+            # Mint events
+            mints {
+            id
+            transaction {
+                id
+            }
+            timestamp
+            pair {
+                id
+                token0 {
+                id
+                symbol
+                decimals
+                }
+                token1 {
+                id
+                symbol
+                decimals
+                }
+            }
+            sender
+            to
+            liquidity
+            amount0
+            amount1
+            logIndex
+            amountUSD
+            feeTo
+            feeLiquidity
+            }
+
+            # Burn events
+            burns {
+            id
+            transaction {
+                id
+            }
+            timestamp
+            pair {
+                id
+                token0 {
+                id
+                symbol
+                decimals
+                }
+                token1 {
+                id
+                symbol
+                decimals
+                }
+            }
+            liquidity
+            sender
+            amount0
+            amount1
+            to
+            logIndex
+            amountUSD
+            feeTo
+            feeLiquidity
+            }
+        }
+    }
     """

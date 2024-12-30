@@ -1,11 +1,11 @@
 from typing import Dict, Any
 from datetime import timedelta
-
+import dotenv
 class Settings:
     POSTGRES_CONFIG = {
         'dbname': 'dex_transactions',
-        'user': 'your_user',
-        'password': 'your_password',
+        'user': 'nicko',
+        'password': 'rumpie',
         'host': 'localhost',
         'port': '5432'
     }
@@ -17,3 +17,5 @@ class Settings:
     # Query optimization settings
     MAX_QUERY_INTERVAL = timedelta(days=30)  # Maximum time range for a single query
     DEFAULT_QUERY_LIMIT = 1000
+    
+    API_KEY = dotenv.get_key('.env', 'API_KEY')

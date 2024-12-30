@@ -1,5 +1,5 @@
 from typing import Dict, Any, List
-from .base_processor import BaseProcessor
+from ..base_processor import BaseProcessor
 from database.models import BaseTransaction, SwapEvent, MintEvent, CollectEvent, BurnEvent, FlashEvent
 import logging
 
@@ -23,18 +23,18 @@ class UniswapV3Processor(BaseProcessor):
                 # Append events to results
                 results[0].extend(events['swaps']) # Add swaps to results
                 results[1].extend(events['mints']) # Add mints to results
-                results[3].extend(events['burns']) # Add burns to results
-                results[2].extend(events['collects']) # Add collects to results
+                results[2].extend(events['burns']) # Add burns to results
+                results[3].extend(events['collects']) # Add collects to results
                 results[4].extend(events['flashs']) # Add flashs to results
                 
-            self.logger.info(f"Processed {len(results[0])} swaps, {len(results[1])} mints, {len(results[2])} collects, {len(results[3])} burns, {len(results[4])} flashs for a total of {len(results[0]) + len(results[1]) + len(results[2]) + len(results[3]) + len(results[4])} events.")
+            self.logger.debug(f"Processed {len(results[0])} swaps, {len(results[1])} mints, {len(results[2])} collects, {len(results[3])} burns, {len(results[4])} flashs for a total of {len(results[0]) + len(results[1]) + len(results[2]) + len(results[3]) + len(results[4])} events.")
         except Exception as e:
             self.logger.error(f"Error processing bulk responses: {str(e)}", exc_info=True)
             raise e
         
         return results
 
-    def process_response(self, transaction_data: Dict[str, Any]) -> Dict[str, list]:
+    def process_response(self, transaction_data: Dict[str, Any]) -> Dict:
         
         # Create base transaction
         transaction = BaseTransaction(

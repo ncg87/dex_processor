@@ -1,7 +1,12 @@
 import logging
 from typing import Dict
 from .base_querier import BaseQuerier
-from .uniswap_querier import UniswapV3Querier
+from .queriers.uniswap_v3_querier import UniswapV3Querier
+from .queriers.uniswap_v2_querier import UniswapV2Querier
+from config.settings import Settings
+
+## Need to add functionality to load API key from .env file
+API_KEY = "81099bb3190c1b75ed9d4fe9112c74ae"
 
 logger = logging.getLogger(__name__)
 
@@ -9,7 +14,11 @@ class QuerierFactory:
     _queriers: Dict[str, tuple[type[BaseQuerier], str]] = {
         'uniswap_v3': (
             UniswapV3Querier,
-            "https://gateway.thegraph.com/api/81099bb3190c1b75ed9d4fe9112c74ae/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV"
+            f"https://gateway.thegraph.com/api/{Settings.API_KEY}/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV"
+        ),
+        'uniswap_v2': (
+            UniswapV2Querier,
+            f"https://gateway.thegraph.com/api/{Settings.API_KEY}/subgraphs/id/A3Np3RQbaBA6oKJgiwDJeo5T3zrYfGHPWFYayMwtNDum"
         )
     }
     

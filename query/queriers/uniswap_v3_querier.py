@@ -1,7 +1,7 @@
 import logging
 from typing import Dict, Any
-from .base_querier import BaseQuerier
-from .queries import get_transactions_query
+from ..base_querier import BaseQuerier
+from ..queries import get_uniswap_v3_query
 
 class UniswapV3Querier(BaseQuerier):
     def __init__(self, url: str):
@@ -28,8 +28,8 @@ class UniswapV3Querier(BaseQuerier):
         }
         
         try:
-            response = self._send_query(get_transactions_query(), variables)
-            self.logger.info(
+            response = self._send_query(get_uniswap_v3_query(), variables)
+            self.logger.debug(
                 f"Retrieved {len(response.get('data', {}).get('transactions', []))} "
                 f"transactions between {start_timestamp} and {end_timestamp}"
             )
