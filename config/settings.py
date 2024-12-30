@@ -1,14 +1,16 @@
 from typing import Dict, Any
 from datetime import timedelta
-import dotenv
+import os
+
 class Settings:
+    
     POSTGRES_CONFIG = {
-        "dbname": dotenv.get_key('.env', 'DB_NAME'),
-        "user": dotenv.get_key('.env', 'DB_USER'),
-        "password": dotenv.get_key('.env', 'DB_PASSWORD'),
-        "host": dotenv.get_key('.env', 'DB_HOST'),
-        "port": int(dotenv.get_key('.env', 'DB_PORT')),
-}
+        "dbname": os.getenv('DB_NAME'),
+        "user": os.getenv('DB_USER'),
+        "password": os.getenv('DB_PASSWORD'),
+        "host": os.getenv('DB_HOST'),
+        "port": int(os.getenv('DB_PORT')),
+    }
     BATCH_SIZE = 1000
     
     # Time-based partition settings
@@ -17,5 +19,10 @@ class Settings:
     # Query optimization settings
     MAX_QUERY_INTERVAL = timedelta(days=30)  # Maximum time range for a single query
     DEFAULT_QUERY_LIMIT = 1000
+    QUERY_INTERVAL=os.getenv('QUERY_INTERVAL')
+    MAX_CONCURRENT_QUERIES=os.getenv('MAX_CONCURRENT_QUERIES')
     
-    API_KEY = dotenv.get_key('.env', 'API_KEY')
+    # TheGraph API Key
+    API_KEY = os.getenv('API_KEY')
+    
+    

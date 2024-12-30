@@ -1,5 +1,5 @@
 from typing import Dict, Any, List
-from ..base_processor import BaseProcessor
+from .base_processor import BaseProcessor
 from database.models import BaseTransaction, SwapEvent, MintEvent, CollectEvent, BurnEvent, FlashEvent
 import logging
 

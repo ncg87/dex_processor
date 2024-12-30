@@ -1,4 +1,4 @@
-from .processing import ProcessorFactory, BaseProcessor, UniswapProcessor
+from .processors import BaseProcessor
 from .database import Database, BaseTransaction, SwapEvent, MintEvent, BurnEvent, FlashEvent, CollectEvent
 from .config import Settings
 from .query import UniswapQuerier

@@ -1,12 +1,9 @@
 import logging
 from typing import Dict
-from .base_querier import BaseQuerier
-from .queriers.uniswap_v3_querier import UniswapV3Querier
-from .queriers.uniswap_v2_querier import UniswapV2Querier
+from query.base_querier import BaseQuerier
+from query.uniswap_v3_querier import UniswapV3Querier
+from query.uniswap_v2_querier import UniswapV2Querier
 from config.settings import Settings
-
-## Need to add functionality to load API key from .env file
-API_KEY = "81099bb3190c1b75ed9d4fe9112c74ae"
 
 logger = logging.getLogger(__name__)
 

@@ -1,8 +1,8 @@
 import logging
 from typing import Dict
-from .base_processor import BaseProcessor
-from .processors.uniswap_v3_processor import UniswapV3Processor
-from .processors.uniswap_v2_processor import UniswapV2Processor
+from processors.base_processor import BaseProcessor
+from processors.uniswap_v3_processor import UniswapV3Processor
+from processors.uniswap_v2_processor import UniswapV2Processor
 
 logger = logging.getLogger(__name__)
 

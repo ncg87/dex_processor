@@ -1,7 +1,7 @@
 from database.database import Database
 from config.settings import Settings
 from datetime import datetime, timedelta
-from pipeline import DataPipeline
+from pipelines import DataPipeline
 import logging
 
 logger = logging.getLogger(__name__)

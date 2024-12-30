@@ -1,7 +1,7 @@
 import logging
 from typing import Dict, Any
-from ..base_querier import BaseQuerier
-from ..queries import get_uniswap_v2_query
+from .base_querier import BaseQuerier
+from .queries import get_uniswap_v2_query
 
 class UniswapV2Querier(BaseQuerier):
     def __init__(self, url: str):
