@@ -5,6 +5,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from fastapi import FastAPI, Query
+from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
 from database.database import Database
 from config.settings import Settings
@@ -13,6 +14,14 @@ from analysis.volume_tracker import VolumeTracker
 # Initialize FastAPI app
 app = FastAPI()
 
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # Frontend origin
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # Initialize database and VolumeTracker
 db = Database(Settings.POSTGRES_CONFIG)
 volume_tracker = VolumeTracker(db)

@@ -10,3 +10,4 @@ __pycache__/
 *.pyz
 .env
 *.log
+*.log.*
