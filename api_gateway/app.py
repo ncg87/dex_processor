@@ -10,7 +10,7 @@ from database.database import Database
 from config.settings import Settings
 from analysis.volume_tracker import VolumeTracker
 
-from fastapi import FastAPI, Depends, HTTPException, Header
+from fastapi import FastAPI, Depends, HTTPException, Header, Query
 
 app = FastAPI()
 
@@ -28,10 +28,17 @@ def validate_api_key(api_key: str = Header(..., alias="api-key")):
 def read_root():
     return {"message": "Welcome to the DEX API Gateway"}
 
-@app.get("/volume")
-async def get_volume(start_time: int, end_time: int, api_key: str = Depends(validate_api_key)):
-    return {"message": f"Volume data for {start_time} to {end_time}"}
-
 # Initialize database and VolumeTracker
 db = Database(Settings.POSTGRES_CONFIG)
 volume_tracker = VolumeTracker(db)
+
+@app.get("/volume")
+async def get_volume(start_time: int, end_time: int, dex_id: Optional[str] = Query(None, description="Optional DEX identifier"), api_key: str = Depends(validate_api_key)):
+    """
+    Fetch transaction data for the specified time range and optional DEX.
+    """
+    try:
+        volume_data = volume_tracker.get_volume_by_crypto(start_time, end_time, dex_id)
+        return volume_data
+    except Exception as e:
+        return {"error": str(e)}
