@@ -20,9 +20,10 @@ VALID_API_KEYS = {
     "user2": "key2",
 }
 
-def validate_api_key(api_key: str = Header(...)):
+def validate_api_key(api_key: str = Header(..., alias="api-key")):
     if api_key not in VALID_API_KEYS.values():
         raise HTTPException(status_code=403, detail="Invalid API key")
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the DEX API Gateway"}
