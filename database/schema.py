@@ -77,16 +77,7 @@ class PostgresSchema:
                 symbol TEXT NOT NULL,         -- Token symbol
                 name TEXT NOT NULL,           -- Token name
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
-
-            CREATE OR REPLACE FUNCTION set_updated_at()
-            RETURNS TRIGGER AS $$
-            BEGIN
-                NEW.updated_at = CURRENT_TIMESTAMP;
-                RETURN NEW;
-            END;
-            $$ LANGUAGE plpgsql;
 
             '''
             ,
