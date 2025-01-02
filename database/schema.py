@@ -76,7 +76,7 @@ class PostgresSchema:
                 id TEXT PRIMARY KEY,          -- Contract address
                 symbol TEXT NOT NULL,         -- Token symbol
                 name TEXT NOT NULL,           -- Token name
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
 
             '''
