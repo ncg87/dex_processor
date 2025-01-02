@@ -79,7 +79,7 @@ class PostgresSchema:
                     FROM pg_trigger t
                     JOIN pg_class c ON c.oid = t.tgrelid
                     WHERE t.tgname = 'update_updated_at'
-                      AND c.relname = 'token_metadata'
+                    AND c.relname = 'token_metadata'
                 ) THEN
                     CREATE OR REPLACE FUNCTION set_updated_at()
                     RETURNS TRIGGER AS $$
@@ -95,6 +95,7 @@ class PostgresSchema:
                     EXECUTE FUNCTION set_updated_at();
                 END IF;
             END $$;
+
             '''
             ,
             
