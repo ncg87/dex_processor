@@ -26,6 +26,7 @@ class PostgresSchema:
                 fee_tier INTEGER,
                 liquidity TEXT,
                 PRIMARY KEY (timestamp, id)
+                CONSTRAINT swaps_unique_id UNIQUE (id)
             ) PARTITION BY RANGE (timestamp)
             ''',
             
@@ -46,6 +47,7 @@ class PostgresSchema:
                 fee_tier INTEGER,
                 liquidity TEXT,
                 PRIMARY KEY (timestamp, id)
+                CONSTRAINT swaps_unique_id UNIQUE (id)
             ) PARTITION BY RANGE (timestamp)
             ''',
             
@@ -66,6 +68,7 @@ class PostgresSchema:
                 fee_tier INTEGER,
                 liquidity TEXT,
                 PRIMARY KEY (timestamp, id)
+                CONSTRAINT swaps_unique_id UNIQUE (id)
             ) PARTITION BY RANGE (timestamp)
             ''',
             
