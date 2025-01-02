@@ -145,7 +145,7 @@ class Database:
                         amount_usd, sender, recipient, origin,
                         fee_tier, liquidity
                     ) VALUES %s
-                    ON CONFLICT (timestamp, id) DO NOTHING
+                    ON CONFLICT (id) DO NOTHING;
                     """,
                     swap_values
                 )
