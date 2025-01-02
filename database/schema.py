@@ -88,31 +88,6 @@ class PostgresSchema:
             END;
             $$ LANGUAGE plpgsql;
 
-            CREATE TRIGGER update_updated_at
-            BEFORE UPDATE ON token_metadata
-            FOR EACH ROW
-            EXECUTE FUNCTION set_updated_at();
-            '''
-            ,
-            
-            '''
-            DO $$
-            BEGIN
-                IF NOT EXISTS (
-                    SELECT 1
-                    FROM pg_trigger t
-                    JOIN pg_class c ON c.oid = t.tgrelid
-                    WHERE t.tgname = 'update_updated_at'
-                    AND c.relname = 'token_metadata'
-                ) THEN
-                    CREATE TRIGGER update_updated_at
-                    BEFORE UPDATE ON token_metadata
-                    FOR EACH ROW
-                    EXECUTE FUNCTION set_updated_at();
-                END IF;
-            END $$;
-
-
             '''
             ,
             
