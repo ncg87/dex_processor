@@ -95,6 +95,31 @@ class PostgresSchema:
             '''
             ,
             
+            '''
+            DO $$
+            BEGIN
+                IF NOT EXISTS (
+                    SELECT 1
+                    FROM pg_trigger
+                    WHERE tgname = 'update_updated_at'
+                ) THEN
+                    CREATE OR REPLACE FUNCTION set_updated_at()
+                    RETURNS TRIGGER AS $$
+                    BEGIN
+                        NEW.updated_at = CURRENT_TIMESTAMP;
+                        RETURN NEW;
+                    END;
+                    $$ LANGUAGE plpgsql;
+
+                    CREATE TRIGGER update_updated_at
+                    BEFORE UPDATE ON token_metadata
+                    FOR EACH ROW
+                    EXECUTE FUNCTION set_updated_at();
+                END IF;
+            END $$;
+            '''
+            ,
+            
             # Create optimized indexes
             '''
             CREATE INDEX IF NOT EXISTS idx_swaps_tokens ON swaps (token0_symbol, token1_symbol);
