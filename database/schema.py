@@ -72,36 +72,14 @@ class PostgresSchema:
             # Tokens Metadata table
 
             '''
-            CREATE TABLE IF NOT EXISTS token_metadata (
-                id TEXT PRIMARY KEY,          -- Contract address
-                symbol TEXT NOT NULL,         -- Token symbol
-                name TEXT NOT NULL,           -- Token name
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
-
-            CREATE OR REPLACE FUNCTION set_updated_at()
-            RETURNS TRIGGER AS $$
-            BEGIN
-                NEW.updated_at = CURRENT_TIMESTAMP;
-                RETURN NEW;
-            END;
-            $$ LANGUAGE plpgsql;
-
-            CREATE TRIGGER update_updated_at
-            BEFORE UPDATE ON token_metadata
-            FOR EACH ROW
-            EXECUTE FUNCTION set_updated_at();
-            '''
-            ,
-            
-            '''
             DO $$
             BEGIN
                 IF NOT EXISTS (
                     SELECT 1
-                    FROM pg_trigger
-                    WHERE tgname = 'update_updated_at'
+                    FROM pg_trigger t
+                    JOIN pg_class c ON c.oid = t.tgrelid
+                    WHERE t.tgname = 'update_updated_at'
+                      AND c.relname = 'token_metadata'
                 ) THEN
                     CREATE OR REPLACE FUNCTION set_updated_at()
                     RETURNS TRIGGER AS $$
