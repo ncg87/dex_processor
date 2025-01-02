@@ -81,20 +81,23 @@ class PostgresSchema:
                     WHERE t.tgname = 'update_updated_at'
                     AND c.relname = 'token_metadata'
                 ) THEN
+                    -- Create the function if it doesn't exist
                     CREATE OR REPLACE FUNCTION set_updated_at()
-                    RETURNS TRIGGER AS $$
+                    RETURNS TRIGGER AS $function$
                     BEGIN
                         NEW.updated_at = CURRENT_TIMESTAMP;
                         RETURN NEW;
                     END;
-                    $$ LANGUAGE plpgsql;
+                    $function$ LANGUAGE plpgsql;
 
+                    -- Create the trigger if it doesn't exist
                     CREATE TRIGGER update_updated_at
                     BEFORE UPDATE ON token_metadata
                     FOR EACH ROW
                     EXECUTE FUNCTION set_updated_at();
                 END IF;
             END $$;
+
 
             '''
             ,
