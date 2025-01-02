@@ -25,8 +25,7 @@ class PostgresSchema:
                 origin TEXT,
                 fee_tier INTEGER,
                 liquidity TEXT,
-                PRIMARY KEY (timestamp, id),
-                CONSTRAINT swaps_unique_id UNIQUE (id)
+                PRIMARY KEY (timestamp, id)
             ) PARTITION BY RANGE (timestamp)
             ''',
             
@@ -46,8 +45,7 @@ class PostgresSchema:
                 origin TEXT,
                 fee_tier INTEGER,
                 liquidity TEXT,
-                PRIMARY KEY (timestamp, id),
-                CONSTRAINT swaps_unique_id UNIQUE (id)
+                PRIMARY KEY (timestamp, id)
             ) PARTITION BY RANGE (timestamp)
             ''',
             
@@ -67,8 +65,7 @@ class PostgresSchema:
                 origin TEXT,
                 fee_tier INTEGER,
                 liquidity TEXT,
-                PRIMARY KEY (timestamp, id),
-                CONSTRAINT swaps_unique_id UNIQUE (id)
+                PRIMARY KEY (timestamp, id)
             ) PARTITION BY RANGE (timestamp)
             ''',
             
