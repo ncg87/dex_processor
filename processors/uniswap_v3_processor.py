@@ -1,6 +1,6 @@
 from typing import Dict, Any, List
 from .base_processor import BaseProcessor
-from database.models import BaseTransaction, SwapEvent, MintEvent, CollectEvent, BurnEvent, FlashEvent
+from database.models import BaseTransaction, SwapEvent, MintEvent, CollectEvent, BurnEvent, FlashEvent, Token
 import logging
 
 logger = logging.getLogger(__name__)
@@ -90,7 +90,7 @@ class UniswapV3Processor(BaseProcessor):
                     dex_id = self.dex_id
                 )
                 swap_transactions.append(swap_transaction)
-                self.logger.debug(f"Processed swap event {swap['id']} for transaction {transaction.id}")
+                #self.logger.debug(f"Processed swap event {swap['id']} for transaction {transaction.id}")
                 
             self.logger.debug(f"Processed {len(swap_transactions)} swap events for transaction {transaction.id}")
         except Exception as e:
@@ -125,7 +125,7 @@ class UniswapV3Processor(BaseProcessor):
                     dex_id = self.dex_id
                 )
                 mint_transactions.append(mint_transaction)
-                self.logger.debug(f"Processed mint event {mint['id']} for transaction {transaction.id}")
+                #self.logger.debug(f"Processed mint event {mint['id']} for transaction {transaction.id}")
                 
             self.logger.debug(f"Processed {len(mint_transactions)} mint events for transaction {transaction.id}")
         except Exception as e:
@@ -160,7 +160,7 @@ class UniswapV3Processor(BaseProcessor):
                     dex_id = self.dex_id
                 )
                 burn_transactions.append(burn_transaction)
-                self.logger.debug(f"Processed burn event {burn['id']} for transaction {transaction.id}")
+                #self.logger.debug(f"Processed burn event {burn['id']} for transaction {transaction.id}")
                 
             self.logger.debug(f"Processed {len(burn_transactions)} burn events for transaction {transaction.id}")
         except Exception as e:
@@ -184,7 +184,7 @@ class UniswapV3Processor(BaseProcessor):
                     **collect
                 )
                 collect_transactions.append(collect_transaction)
-                self.logger.debug(f"Processed collect event {collect['id']} for transaction {transaction.id}")
+                #self.logger.debug(f"Processed collect event {collect['id']} for transaction {transaction.id}")
                 
             self.logger.debug(f"Processed {len(collect_transactions)} collect events for transaction {transaction.id}")
         except Exception as e:
@@ -209,7 +209,7 @@ class UniswapV3Processor(BaseProcessor):
                     **flash
                 )
                 flash_transactions.append(flash_transaction)
-                self.logger.debug(f"Processed flash event {flash['id']} for transaction {transaction.id}")
+                #self.logger.debug(f"Processed flash event {flash['id']} for transaction {transaction.id}")
                 
             self.logger.debug(f"Processed {len(flash_transactions)} flash events for transaction {transaction.id}")
         except Exception as e:
@@ -217,4 +217,22 @@ class UniswapV3Processor(BaseProcessor):
             raise e
         
         return flash_transactions
+    
+    def _process_tokens(self, tokens_data: List[Dict]) -> List[Token]:
+        try:
+            tokens = [
+                Token(
+                    id=token['id'],
+                    symbol=token['symbol'],
+                    name=token['name']
+                )
+                for token in tokens_data.get("data", {}).get("tokens", [])
+            ]  
+            self.logger.debug(f"Processed {len(tokens)} tokens")
+        except Exception as e:
+            self.logger.error(f"Error processing tokens: {str(e)}", exc_info=True)
+            raise e
+        
+        return tokens
+
 

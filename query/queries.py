@@ -1,3 +1,4 @@
+# Uniswap V3 Queries #
 def get_uniswap_v3_query():
     """
     Query to fetch transactions within a time period.
@@ -188,6 +189,20 @@ def get_uniswap_v3_query():
         }
         }
     """
+def get_uniswap_v3_tokens_query():
+    """Fetch all tokens from the specified DEX subgraph."""
+    return """
+    query ($first: Int!, $skip: Int!) {
+        tokens(first: $first, skip: $skip, orderBy: volumeUSD, orderDirection: desc) {
+            id
+            symbol
+            name
+        }
+    }
+    """
+    
+    
+# Uniswap V2 Queries #
 def get_uniswap_v2_query():
     """
     Query to fetch transactions within a time period from Uniswap V2.

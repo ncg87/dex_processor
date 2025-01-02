@@ -1,7 +1,7 @@
 import logging
 from typing import Dict, Any
 from .base_querier import BaseQuerier
-from .queries import get_uniswap_v3_query
+from .queries import get_uniswap_v3_query, get_uniswap_v3_tokens_query
 
 class UniswapV3Querier(BaseQuerier):
     def __init__(self, url: str):
@@ -36,4 +36,20 @@ class UniswapV3Querier(BaseQuerier):
             return response
         except Exception as e:
             self.logger.error(f"Error getting transactions: {str(e)}", exc_info=True)
+            raise
+    
+    def get_tokens(self, skip: int = 0) -> Dict[str, Any]:
+        """
+        Get tokens from the specified DEX subgraph
+        """
+        variables = {
+            "first": 1000,
+            "skip": skip
+        }
+        try:
+            response = self._send_query(get_uniswap_v3_tokens_query(), variables)
+            self.logger.debug(f"Retrieved {len(response.get('data', {}).get('tokens', []))} tokens")
+            return response
+        except Exception as e:
+            self.logger.error(f"Error getting tokens: {str(e)}", exc_info=True)
             raise

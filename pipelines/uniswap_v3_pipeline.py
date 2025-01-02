@@ -21,3 +21,10 @@ class UniswapV3Pipeline(BasePipeline):
             
         logger.debug(f"Fetching Uniswap data: {start_timestamp} to {end_timestamp}, skip={skip}")
         return self.querier.get_transactions(start_timestamp, end_timestamp, skip=skip)
+    
+    def fetch_tokens(self, skip : int) -> List[Dict[str, Any]]:
+        """Fetch tokens from Uniswap."""
+        
+        logger.debug(f"Fetching Uniswap tokens, skip={skip}")
+        return self.querier.get_tokens(skip=skip)
+        

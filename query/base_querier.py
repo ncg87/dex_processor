@@ -14,6 +14,11 @@ class BaseQuerier(ABC):
         """Abstract method to get transactions within a time period"""
         pass
     
+    @abstractmethod
+    def get_tokens(self) -> Dict[str, Any]:
+        """Abstract method to get tokens from the specified DEX subgraph"""
+        pass
+    
     def _send_query(self, query: str, variables: Dict[str, Any]) -> Dict[str, Any]:
         """Send GraphQL query and return response"""
         try:

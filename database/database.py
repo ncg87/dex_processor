@@ -4,6 +4,7 @@ import psycopg2.extras
 from psycopg2.extras import execute_values, RealDictCursor
 from datetime import datetime, timedelta
 from typing import List, Dict, Any
+from .models import Token
 from .schema import PostgresSchema
 
 logger = logging.getLogger(__name__)
@@ -84,6 +85,14 @@ class Database:
             events_list: List containing lists of events [swaps, mints, burns, collects, flashs]
         """
         try:
+            # Extract timestamps from the batch
+            timestamps = [event.timestamp for events in events_list for event in events if events]
+            if timestamps:
+            # Determine the date range of the batch
+                start_date = datetime.utcfromtimestamp(min(timestamps))
+                end_date = datetime.utcfromtimestamp(max(timestamps))
+                self.ensure_partitions(start_date, end_date)  # Ensure partitions exist for the range
+            # Insert events
             with self._get_connection() as conn:
                 with conn.cursor() as cur:
                     # Insert each type of event
@@ -211,6 +220,35 @@ class Database:
         except Exception as e:
             logger.error(f"Error in batch insert: {str(e)}", exc_info=True)
             raise
+    
+    def upsert_token_metadata(self, tokens: List[Token]):
+        """
+        Insert or update token metadata.
+
+        Args:
+            tokens: List of Token objects with metadata (id, symbol, name).
+        """
+        insert_query = """
+        INSERT INTO token_metadata (id, symbol, name)
+        VALUES %s
+        ON CONFLICT (id) DO UPDATE
+        SET symbol = EXCLUDED.symbol,
+            name = EXCLUDED.name,
+            updated_at = CURRENT_TIMESTAMP;
+        """
+        # Prepare values for batch insertion
+        values = [(token.id, token.symbol, token.name) for token in tokens]
+
+        try:
+            with self._get_connection() as conn:
+                with conn.cursor() as cur:
+                    execute_values(cur, insert_query, values)
+                conn.commit()
+                logger.info(f"Upserted {len(tokens)} tokens into token_metadata.")
+        except Exception as e:
+            logger.error(f"Error upserting token metadata: {str(e)}", exc_info=True)
+            raise
+
         
     def get_events_by_time(
         self,

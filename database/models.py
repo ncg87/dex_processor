@@ -1,6 +1,14 @@
 from dataclasses import dataclass
 from typing import Optional
 
+# DEX Models #
+
+@dataclass
+class Token:
+    id: str
+    symbol: str
+    name: str
+
 @dataclass
 class BaseTransaction:
     id: str                              # Transaction ID

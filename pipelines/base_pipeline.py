@@ -30,6 +30,11 @@ class BasePipeline(ABC):
         """Abstract method for fetching data from the DEX."""
         pass
 
+    @abstractmethod
+    def fetch_tokens(self):
+        """Abstract method for fetching tokens from the DEX."""
+        pass
+
     def process_batch(self, start_timestamp, end_timestamp, skip, max_retries=3, retry_delay=5):
         """
         Process a single batch of transactions.
@@ -115,3 +120,32 @@ class BasePipeline(ABC):
             "transactions_processed": total_transactions,
             "events_processed": total_events,
         }
+
+    def process_tokens(self):
+        """Process tokens from the DEX."""
+        total_tokens = 0
+        skip = 0
+
+        while True:
+            try:
+                # Fetch raw token data
+                raw_data = self.fetch_tokens(skip)
+                tokens = self.processor._process_tokens(raw_data)  # Convert raw data to Token objects
+
+                if not tokens:
+                    logger.info(f"No more tokens found after skip={skip}")
+                    break
+
+                # Insert tokens into the database
+                self.db.upsert_token_metadata(tokens)
+
+                total_tokens += len(tokens)
+                skip += len(tokens)
+                logger.info(f"Processed {len(tokens)} tokens, Total processed: {total_tokens}")
+
+            except Exception as e:
+                logger.error(f"Error processing tokens after skip={skip}: {e}", exc_info=True)
+                break
+
+        return total_tokens
+

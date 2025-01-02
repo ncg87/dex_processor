@@ -69,6 +69,32 @@ class PostgresSchema:
             ) PARTITION BY RANGE (timestamp)
             ''',
             
+            # Tokens Metadata table
+
+            '''
+            CREATE TABLE IF NOT EXISTS token_metadata (
+                id TEXT PRIMARY KEY,          -- Contract address
+                symbol TEXT NOT NULL,         -- Token symbol
+                name TEXT NOT NULL,           -- Token name
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE OR REPLACE FUNCTION set_updated_at()
+            RETURNS TRIGGER AS $$
+            BEGIN
+                NEW.updated_at = CURRENT_TIMESTAMP;
+                RETURN NEW;
+            END;
+            $$ LANGUAGE plpgsql;
+
+            CREATE TRIGGER update_updated_at
+            BEFORE UPDATE ON token_metadata
+            FOR EACH ROW
+            EXECUTE FUNCTION set_updated_at();
+            '''
+            ,
+            
             # Create optimized indexes
             '''
             CREATE INDEX IF NOT EXISTS idx_swaps_tokens ON swaps (token0_symbol, token1_symbol);
