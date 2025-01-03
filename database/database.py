@@ -279,4 +279,35 @@ class Database:
         except Exception as e:
             logger.error(f"Error fetching events from {event_type}: {str(e)}", exc_info=True)
             raise
+    
+    def get_all_tokens(self) -> list:
+        """
+        Retrieve all tokens from the database.
+        """
+        query = "SELECT * FROM token_metadata"
+        try:
+            with self._get_connection() as conn:
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    cur.execute(query)
+                    tokens = cur.fetchall()
+            return tokens
+        except Exception as e:
+            logger.error(f"Error fetching tokens: {str(e)}", exc_info=True)
+            raise
+        
+    def get_tokens_by_symbol(self, symbol: str) -> list:
+        """
+        Retrieve tokens filtered by symbol.
+        """
+        query = "SELECT * FROM tokens WHERE symbol = %s"
+        try:
+            with self._get_connection() as conn:
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    cur.execute(query, (symbol,))
+                    tokens = cur.fetchall()
+            return tokens
+        except Exception as e:
+            logger.error(f"Error fetching tokens by symbol: {str(e)}", exc_info=True)
+            raise
+
 
