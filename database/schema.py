@@ -68,6 +68,10 @@ class PostgresSchema:
                 PRIMARY KEY (timestamp, id)
             ) PARTITION BY RANGE (timestamp)
             ''',
+            # Collects table
+            
+            
+            # Flashed table
             
             # Tokens Metadata table
 

@@ -24,7 +24,8 @@ class Settings:
     DEFAULT_QUERY_LIMIT = 1000
     QUERY_INTERVAL=os.getenv('QUERY_INTERVAL')
     MAX_CONCURRENT_QUERIES=os.getenv('MAX_CONCURRENT_QUERIES')
-    
+    TOKEN_QUERY_INTERVAL=os.getenv('TOKEN_QUERY_INTERVAL')
+
     # TheGraph API Key
     API_KEY = os.getenv('API_KEY')
     

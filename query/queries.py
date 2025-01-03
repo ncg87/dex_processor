@@ -201,7 +201,6 @@ def get_uniswap_v3_tokens_query():
     }
     """
     
-    
 # Uniswap V2 Queries #
 def get_uniswap_v2_query():
     """
