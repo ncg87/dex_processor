@@ -66,6 +66,7 @@ class VolumeTracker:
         """
         dex_volumes = {}
 
+        # Add swaps, mints, and burns in the future
         for event_type in ["swaps"]:
             events = self.db.get_crypto_events_by_time(event_type, start_time, end_time, crypto_id)
             for event in events:
@@ -75,6 +76,11 @@ class VolumeTracker:
                 if dex_id not in dex_volumes:
                     dex_volumes[dex_id] = {"id": dex_id, "volume": 0}
                 dex_volumes[dex_id]["volume"] += amount_usd
-
-        return dex_volumes
+        # Convert volumes to a list for easy JSON serialization
+        volume_list = list(dex_volumes.values())
+        
+        # Sort the list by volume in descending order
+        volume_list.sort(key=lambda x: x['volume'], reverse=True)
+        self.logger.info(f"Volume calculation completed. Processed {len(events)} events.")
+        return volume_list
 
