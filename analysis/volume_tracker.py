@@ -71,10 +71,10 @@ class VolumeTracker:
             for event in events:
                 dex_id = event['dex_id']
                 amount_usd = float(event['amount_usd'])
-                
+                # Aggregate volumes by token ID and symbol
                 if dex_id not in dex_volumes:
-                    dex_volumes[dex_id] = 0.0
-                dex_volumes[dex_id] += amount_usd
+                    dex_volumes[dex_id] = {"id": dex_id, "volume": 0}
+                dex_volumes[dex_id]["volume"] += amount_usd
 
         return dex_volumes
 
