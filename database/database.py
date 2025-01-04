@@ -145,6 +145,8 @@ class Database:
                         swap.token1_symbol,
                         swap.token0_id,
                         swap.token1_id,
+                        swap.token0_name,
+                        swap.token1_name,
                         swap.amount0,
                         swap.amount1,
                         swap.amount_usd,
@@ -161,6 +163,7 @@ class Database:
                     INSERT INTO swaps (
                         id, parent_transaction, timestamp, dex_id,
                         token0_symbol, token1_symbol, token0_id, token1_id,
+                        token0_name, token1_name,
                         amount0, amount1, amount_usd, sender, recipient, origin,
                         fee_tier, liquidity
                     ) VALUES %s
@@ -181,6 +184,8 @@ class Database:
                         mint.token1_symbol,
                         mint.token0_id,
                         mint.token1_id,
+                        mint.token0_name,
+                        mint.token1_name,
                         mint.amount0,
                         mint.amount1,
                         mint.amount_usd,
@@ -196,6 +201,7 @@ class Database:
                     INSERT INTO mints (
                         id, parent_transaction, timestamp, dex_id,
                         token0_symbol, token1_symbol, token0_id, token1_id,
+                        token0_name, token1_name,
                         amount0, amount1, amount_usd, owner, origin,
                         fee_tier, liquidity
                     ) VALUES %s
@@ -216,6 +222,8 @@ class Database:
                         burn.token1_symbol,
                         burn.token0_id,
                         burn.token1_id,
+                        burn.token0_name,
+                        burn.token1_name,
                         burn.amount0,
                         burn.amount1,
                         burn.amount_usd,
@@ -231,6 +239,7 @@ class Database:
                     INSERT INTO burns (
                         id, parent_transaction, timestamp, dex_id,
                         token0_symbol, token1_symbol, token0_id, token1_id,
+                        token0_name, token1_name,
                         amount0, amount1, amount_usd, owner, origin,
                         fee_tier, liquidity
                     ) VALUES %s

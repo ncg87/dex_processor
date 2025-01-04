@@ -31,23 +31,19 @@ class VolumeTracker:
             token1_id = event['token1_id']
             token0_symbol = event['token0_symbol']
             token1_symbol = event['token1_symbol']
+            token0_name = event['token0_name']
+            token1_name = event['token1_name']
             amount_usd = float(event['amount_usd'])
             
             # Aggregate volumes by token ID and symbol
             if token0_id not in crypto_volumes:
-                crypto_volumes[token0_id] = {"id": token0_id, "symbol": token0_symbol, "volume": 0}
+                crypto_volumes[token0_id] = {"id": token0_id, "symbol": token0_symbol, "name": token0_name, "volume": 0}
             if token1_id not in crypto_volumes:
-                crypto_volumes[token1_id] = {"id": token1_id, "symbol": token1_symbol, "volume": 0}
+                crypto_volumes[token1_id] = {"id": token1_id, "symbol": token1_symbol, "name": token1_name, "volume": 0}
             
             # Add to the total volume for each token
             crypto_volumes[token0_id]["volume"] += amount_usd
             crypto_volumes[token1_id]["volume"] += amount_usd
-
-        # Convert volumes to a list for easy JSON serialization
-        volume_list = list(crypto_volumes.values())
-        
-        # Sort the list by volume in descending order
-        volume_list.sort(key=lambda x: x['volume'], reverse=True)
         
         self.logger.info(f"Volume calculation completed. Processed {len(swaps) + len(mints) + len(burns)} events.")
-        return volume_list
+        return crypto_volumes
