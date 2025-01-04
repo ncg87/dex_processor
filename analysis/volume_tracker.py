@@ -44,6 +44,12 @@ class VolumeTracker:
             # Add to the total volume for each token
             crypto_volumes[token0_id]["volume"] += amount_usd
             crypto_volumes[token1_id]["volume"] += amount_usd
+
+        # Convert volumes to a list for easy JSON serialization
+        volume_list = list(crypto_volumes.values())
+        
+        # Sort the list by volume in descending order
+        volume_list.sort(key=lambda x: x['volume'], reverse=True)
         
         self.logger.info(f"Volume calculation completed. Processed {len(swaps) + len(mints) + len(burns)} events.")
-        return crypto_volumes
+        return volume_list
