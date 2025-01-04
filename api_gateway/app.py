@@ -95,7 +95,7 @@ def get_crypto_volume(
         JSON response containing the volumes by DEX.
     """
     try:
-        volume_data = volume_tracker.get_volume_by_dex(crypto_id, start_time, end_time)
+        volume_data = volume_tracker.get_volume_by_dex(start_time, end_time, crypto_id)
         logger.info(f"Volume data retrieved successfully for {crypto_id} from {start_time} to {end_time}")
         return volume_data
     except Exception as e:
