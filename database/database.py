@@ -281,7 +281,7 @@ class Database:
                     cur.execute("SELECT COUNT(*) FROM token_metadata WHERE id IN %s", (tuple(t[0] for t in tokens),))
                     new_tokens = cur.fetchall()
                     conn.commit()
-                    logger.info(f"Inserted {new_tokens} new tokens into token_metadata.")
+                    logger.debug(f"Inserted {new_tokens} new tokens into token_metadata.")
         except Exception as e:
             logger.error(f"Error inserting token metadata: {str(e)}", exc_info=True)
             raise

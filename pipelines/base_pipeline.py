@@ -71,7 +71,7 @@ class BasePipeline(ABC):
                 has_more = len(transactions) >= self.batch_size
                 next_skip = skip + len(transactions)
 
-                logger.info(
+                logger.debug(
                     f"Processed batch: {len(transactions)} transactions, {total_events} events, Skip: {skip}"
                 )
                 return has_more, len(transactions), total_events, next_skip
@@ -100,7 +100,7 @@ class BasePipeline(ABC):
         total_transactions, total_events = 0, 0
         skip = 0
 
-        logger.info(f"Processing data from {start_time} to {end_time}")
+        logger.debug(f"Processing data from {start_time} to {end_time}")
 
         while True:
             has_more, batch_tx, batch_events, next_skip = self.process_batch(
@@ -141,7 +141,7 @@ class BasePipeline(ABC):
 
                 total_tokens += len(tokens)
                 skip += len(tokens)
-                logger.info(f"Processed {len(tokens)} tokens, Total processed: {total_tokens}")
+                logger.debug(f"Processed {len(tokens)} tokens, Total processed: {total_tokens}")
 
             except Exception as e:
                 logger.error(f"Error processing tokens after skip={skip}: {e}", exc_info=True)
