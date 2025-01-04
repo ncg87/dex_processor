@@ -258,7 +258,7 @@ class Database:
         except Exception as e:
             logger.error(f"Error in batch insert: {str(e)}", exc_info=True)
             raise
-    # Adjsut pipeline so that it doesn't need a token object
+
     def insert_token_metadata(self, tokens: List[tuple]):
         """
         Insert token metadata.
@@ -354,9 +354,53 @@ class Database:
             with self._get_connection() as conn:
                 with conn.cursor(cursor_factory=RealDictCursor) as cur:
                     cur.execute(query, (token_id,))
-                    return dict(cur.fetchall())
+                    tokens = cur.fetchall()
+                    return [dict(token) for token in tokens]
         except Exception as e:
             logger.error(f"Error fetching token by ID: {str(e)}", exc_info=True)
             raise
+    from datetime import datetime, timedelta
+
+    def get_crypto_events_by_time(
+        self, 
+        event_type: str, 
+        crypto_id: str, 
+        start_time: int, 
+        end_time: int, 
+        dex_id: str = None
+    ) -> list:
+        """
+        Retrieve events of a specific cryptocurrency within a specified time range.
+        Args:
+            event_type: The type of events (e.g., 'swaps', 'mints', 'burns').
+            crypto_id: The ID of the cryptocurrency.
+            start_time: The start time as a UNIX timestamp.
+            end_time: The end time as a UNIX timestamp.
+            dex_id: Optional DEX identifier to filter events by.
+        Returns:
+            List of events involving the specified cryptocurrency.
+        """
+        query = f"""
+            SELECT *
+            FROM {event_type}
+            WHERE (token0_id = %s OR token1_id = %s)
+            AND timestamp >= %s AND timestamp <= %s
+        """
+        params = [crypto_id, crypto_id, start_time, end_time]
+
+        if dex_id:
+            query += " AND dex_id = %s"
+            params.append(dex_id)
+
+        try:
+            with self._get_connection() as conn:
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    cur.execute(query, params)
+                    return cur.fetchall()
+        except Exception as e:
+            logger.error(f"Error fetching events for crypto {crypto_id} in {event_type}: {str(e)}", exc_info=True)
+            raise
+
+
 
 

@@ -53,3 +53,28 @@ class VolumeTracker:
         
         self.logger.info(f"Volume calculation completed. Processed {len(swaps) + len(mints) + len(burns)} events.")
         return volume_list
+    
+    def get_volume_by_dex(self, crypto_id: str, start_time: int, end_time: int) -> Dict[str, float]:
+        """
+        Calculate the total volume of a specific crypto on each DEX.
+        Args:
+            crypto_id: The ID of the cryptocurrency to calculate volumes for.
+            start_time: The start time as a UNIX timestamp.
+            end_time: The end time as a UNIX timestamp.
+        Returns:
+            Dictionary with DEX IDs as keys and volumes as values.
+        """
+        dex_volumes = {}
+
+        for event_type in ["swaps"]:
+            events = self.db.get_crypto_events_by_time(event_type, crypto_id, start_time, end_time)
+            for event in events:
+                dex_id = event['dex_id']
+                amount_usd = float(event['amount_usd'])
+                
+                if dex_id not in dex_volumes:
+                    dex_volumes[dex_id] = 0.0
+                dex_volumes[dex_id] += amount_usd
+
+        return dex_volumes
+

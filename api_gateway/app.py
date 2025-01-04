@@ -44,8 +44,8 @@ def read_root():
 db = Database(Settings.POSTGRES_CONFIG)
 volume_tracker = VolumeTracker(db)
 
-@app.get("/volume")
-async def get_volume(
+@app.get("/dex_volume")
+async def get_dex_volume(
     start_time: int,
     end_time: int,
     dex_id: Optional[str] = Query(None, description="Optional DEX identifier"),
@@ -75,9 +75,32 @@ def get_token_metadata(token_id: Optional[str] = None, symbol: Optional[str] = N
             tokens = db.get_tokens_by_symbol(symbol)
         else:
             tokens = db.get_all_tokens()
-        return {"tokens": tokens}
+        return tokens
     except Exception as e:
         logger.error(f"Error fetching tokens: {str(e)}", exc_info=True)
         return {"error": str(e)}
+
+@app.get("/crypto_volume")
+def get_crypto_volume(
+    start_time: int,
+    end_time: int,
+    crypto_id: str = Query(..., description="ID of the cryptocurrency"),
+    api_key: str = Depends(validate_api_key)
+):
+    """
+    Fetch the volume of a specific cryptocurrency on all DEXs in the last 24 hours.
+    Args:
+        crypto_id: The ID of the cryptocurrency.
+    Returns:
+        JSON response containing the volumes by DEX.
+    """
+    try:
+        volume_data = volume_tracker.get_volume_by_dex(crypto_id, start_time, end_time)
+        logger.info(f"Volume data retrieved successfully for {crypto_id} from {start_time} to {end_time}")
+        return volume_data
+    except Exception as e:
+        logger.error(f"Error fetching crypto volume: {str(e)}", exc_info=True)
+        return {"error": str(e)}
+
 
 
