@@ -84,7 +84,7 @@ def get_token_metadata(token_id: Optional[str] = None, symbol: Optional[str] = N
 def get_crypto_volume(
     start_time: int,
     end_time: int,
-    crypto_id: str = Query(..., description="ID of the cryptocurrency"),
+    crypto_id: Optional[str] = Query(None, description="ID of the cryptocurrency"),
     api_key: str = Depends(validate_api_key)
 ):
     """

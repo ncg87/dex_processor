@@ -1,5 +1,5 @@
 import logging
-from typing import Dict
+from typing import Dict, Optional
 from database.database import Database
 
 logger = logging.getLogger(__name__)
@@ -54,7 +54,7 @@ class VolumeTracker:
         self.logger.info(f"Volume calculation completed. Processed {len(swaps) + len(mints) + len(burns)} events.")
         return volume_list
     
-    def get_volume_by_dex(self, crypto_id: str, start_time: int, end_time: int) -> Dict[str, float]:
+    def get_volume_by_dex(self, start_time: int, end_time: int, crypto_id: Optional[str] = None) -> Dict[str, float]:
         """
         Calculate the total volume of a specific crypto on each DEX.
         Args:

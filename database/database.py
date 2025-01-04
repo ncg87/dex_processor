@@ -364,33 +364,35 @@ class Database:
     def get_crypto_events_by_time(
         self, 
         event_type: str, 
-        crypto_id: str, 
         start_time: int, 
         end_time: int, 
-        dex_id: str = None
+        crypto_id: str = None
     ) -> list:
         """
         Retrieve events of a specific cryptocurrency within a specified time range.
         Args:
             event_type: The type of events (e.g., 'swaps', 'mints', 'burns').
-            crypto_id: The ID of the cryptocurrency.
+            crypto_id: The ID of the cryptocurrency (optional).
             start_time: The start time as a UNIX timestamp.
             end_time: The end time as a UNIX timestamp.
-            dex_id: Optional DEX identifier to filter events by.
         Returns:
-            List of events involving the specified cryptocurrency.
+            List of events involving the specified cryptocurrency or all events if no crypto_id is provided.
         """
-        query = f"""
-            SELECT *
-            FROM {event_type}
-            WHERE (token0_id = %s OR token1_id = %s)
-            AND timestamp >= %s AND timestamp <= %s
-        """
-        params = [crypto_id, crypto_id, start_time, end_time]
-
-        if dex_id:
-            query += " AND dex_id = %s"
-            params.append(dex_id)
+        if crypto_id:
+            query = f"""
+                SELECT *
+                FROM {event_type}
+                WHERE (token0_id = %s OR token1_id = %s)
+                AND timestamp >= %s AND timestamp <= %s
+            """
+            params = [crypto_id, crypto_id, start_time, end_time]
+        else:
+            query = f"""
+                SELECT *
+                FROM {event_type}
+                WHERE timestamp >= %s AND timestamp <= %s
+            """
+            params = [start_time, end_time]
 
         try:
             with self._get_connection() as conn:
@@ -398,8 +400,12 @@ class Database:
                     cur.execute(query, params)
                     return cur.fetchall()
         except Exception as e:
-            logger.error(f"Error fetching events for crypto {crypto_id} in {event_type}: {str(e)}", exc_info=True)
+            logger.error(
+                f"Error fetching events for event type {event_type} and crypto ID {crypto_id or 'ALL'}: {str(e)}",
+                exc_info=True
+            )
             raise
+
 
 
 
