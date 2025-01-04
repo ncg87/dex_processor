@@ -349,7 +349,7 @@ class Database:
         """
         Retrieve a token by its ID.
         """
-        query = "SELECT * FROM tokens WHERE id = %s"
+        query = "SELECT * FROM token_metadata WHERE id = %s"
         try:
             with self._get_connection() as conn:
                 with conn.cursor(cursor_factory=RealDictCursor) as cur:
