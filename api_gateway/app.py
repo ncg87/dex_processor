@@ -57,24 +57,24 @@ async def get_volume(
     logger.info(f"Request for volume: start_time={start_time}, end_time={end_time}, dex_id={dex_id}")
     try:
         volume_data = volume_tracker.get_volume_by_crypto(start_time, end_time, dex_id)
-        logger.info(f"Volume data retrieved successfully: {volume_data}")
+        logger.info(f"Volume data retrieved successfully for {dex_id} from {start_time} to {end_time}")
         return volume_data
     except Exception as e:
         logger.error(f"Error fetching volume data: {str(e)}", exc_info=True)
         return {"error": str(e)}
 
 @app.get("/tokens")
-def get_tokens(symbol: Optional[str] = None, api_key: str = Depends(validate_api_key)):
+def get_tokens(symbol: Optional[str] = None, token_id: Optional[str] = None, api_key: str = Depends(validate_api_key)):
     """
-    Retrieve all token data or filter by symbol.
+    Retrieve token data by symbol or token ID.
     """
-    logger.info(f"Request for tokens: symbol={symbol}")
     try:
-        if symbol:
+        if token_id:
+            tokens = db.get_token_by_id(token_id)
+        elif symbol:
             tokens = db.get_tokens_by_symbol(symbol)
         else:
             tokens = db.get_all_tokens()
-        logger.info(f"Tokens retrieved successfully: {tokens}")
         return {"tokens": tokens}
     except Exception as e:
         logger.error(f"Error fetching tokens: {str(e)}", exc_info=True)

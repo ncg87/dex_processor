@@ -137,7 +137,7 @@ class BasePipeline(ABC):
                     break
 
                 # Insert tokens into the database
-                self.db.upsert_token_metadata(tokens)
+                self.db.insert_token_metadata(tokens)
 
                 total_tokens += len(tokens)
                 skip += len(tokens)

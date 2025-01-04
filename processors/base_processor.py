@@ -1,6 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import Dict, Any
+from typing import Dict, Any, List
 from database.models import BaseTransaction
 
 logger = logging.getLogger(__name__)
@@ -15,3 +15,9 @@ class BaseProcessor(ABC):
     def process_response(self, response_data: Dict[str, Any]) -> tuple[BaseTransaction, Dict[str, list]]:
         """Process the API response and return transaction and events"""
         pass
+    
+    @abstractmethod
+    def process_bulk_responses(self, bulk_response: Dict[str, Any]) -> List[Dict]:
+        """Process the API response and return transaction and events"""
+        pass
+    

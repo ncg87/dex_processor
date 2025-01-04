@@ -26,6 +26,10 @@ class SwapEvent:
     id: str                             # Swap transaction ID   
     token0_symbol: str                  # Token 0 symbol
     token1_symbol: str                  # Token 1 symbol
+    token0_id: str                      # Token 0 ID
+    token1_id: str                      # Token 1 ID
+    token0_name: str                    # Token 0 name
+    token1_name: str                    # Token 1 name
     amount0: str                        # Amount of token 0 in swap
     amount1: str                        # Amount of token 1 in swap
     amount_usd: str                     # Amount of USD of the swap (amount0 * token0_price or amount1 * token1_price)
@@ -44,6 +48,10 @@ class MintEvent:
     id: str                             # Mint transaction ID
     token0_symbol: str                  # Token 0 symbol
     token1_symbol: str                  # Token 1 symbol
+    token0_id: str                      # Token 0 ID
+    token1_id: str                      # Token 1 ID
+    token0_name: str                    # Token 0 name
+    token1_name: str                    # Token 1 name
     amount0: str                        # Amount of token 0 in mint
     amount1: str                        # Amount of token 1 in mint
     amount_usd: str                     # Amount of USD of the mint (amount0 * token0_price or amount1 * token1_price)
@@ -61,6 +69,10 @@ class BurnEvent:
     id: str                             # Burn transaction ID
     token0_symbol: str                  # Token 0 symbol
     token1_symbol: str                  # Token 1 symbol
+    token0_id: str                      # Token 0 ID
+    token1_id: str                      # Token 1 ID
+    token0_name: str                    # Token 0 name
+    token1_name: str                    # Token 1 name
     amount0: str                        # Amount of token 0 in burn
     amount1: str                        # Amount of token 1 in burn
     amount_usd: str                     # Amount of USD of the burn (amount0 * token0_price or amount1 * token1_price)

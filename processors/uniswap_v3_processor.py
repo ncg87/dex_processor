@@ -1,4 +1,4 @@
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Tuple
 from .base_processor import BaseProcessor
 from database.models import BaseTransaction, SwapEvent, MintEvent, CollectEvent, BurnEvent, FlashEvent, Token
 import logging
@@ -12,7 +12,7 @@ class UniswapV3Processor(BaseProcessor):
         self.logger.info("Initialized UniswapV3Processor...")
     
     def process_bulk_responses(self, response_data: Dict[str, Any]) -> List[Dict[str, list]]:
-        self.logger.debug(f"Processing bulk responses with {len(response_data.get('data', {}).get('transactions', []))} transactions")
+        self.logger.debug(f"Processing bulk responses on {self.dex_id} with {len(response_data.get('data', {}).get('transactions', []))} transactions")
         # Initialize results for each event type
         results = [[],[],[],[],[]]
         try:
@@ -29,7 +29,7 @@ class UniswapV3Processor(BaseProcessor):
                 
             self.logger.debug(f"Processed {len(results[0])} swaps, {len(results[1])} mints, {len(results[2])} collects, {len(results[3])} burns, {len(results[4])} flashs for a total of {len(results[0]) + len(results[1]) + len(results[2]) + len(results[3]) + len(results[4])} events.")
         except Exception as e:
-            self.logger.error(f"Error processing bulk responses: {str(e)}", exc_info=True)
+            self.logger.error(f"Error processing bulk responseson : {str(e)}", exc_info=True)
             raise e
         
         return results
@@ -46,7 +46,7 @@ class UniswapV3Processor(BaseProcessor):
             gas_price=transaction_data['gasPrice']
         )
         
-        self.logger.debug(f"Processing transaction {transaction.id} from block {transaction.block_number}")
+        #self.logger.debug(f"Processing transaction {transaction.id} from block {transaction.block_number}")
         
         # Process events
         events = {
@@ -56,10 +56,10 @@ class UniswapV3Processor(BaseProcessor):
             'collects': self._process_collects(transaction_data.get('collects', []), transaction),
             'flashs': self._process_flashs(transaction_data.get('flashed', []), transaction)
         }
-        self.logger.debug(f"Processed events for transaction {transaction.id}: "
-                            f"swaps={len(events['swaps'])}, mints={len(events['mints'])}, "
-                            f"burns={len(events['burns'])}, collects={len(events['collects'])}, "
-                            f"flashs={len(events['flashs'])}")
+        #self.logger.debug(f"Processed events for transaction {transaction.id}: "
+        #                    f"swaps={len(events['swaps'])}, mints={len(events['mints'])}, "
+        #                    f"burns={len(events['burns'])}, collects={len(events['collects'])}, "
+        #                    f"flashs={len(events['flashs'])}")
         
         return events
     
@@ -79,6 +79,10 @@ class UniswapV3Processor(BaseProcessor):
                     id = swap['id'],
                     token0_symbol = swap['pool']['token0']['symbol'],
                     token1_symbol = swap['pool']['token1']['symbol'],
+                    token0_name = swap['pool']['token0']['name'],
+                    token1_name = swap['pool']['token1']['name'],
+                    token0_id = swap['pool']['token0']['id'],
+                    token1_id = swap['pool']['token1']['id'],
                     amount0 = swap['amount0'],
                     amount1 = swap['amount1'],
                     amount_usd = swap['amountUSD'],
@@ -92,7 +96,7 @@ class UniswapV3Processor(BaseProcessor):
                 swap_transactions.append(swap_transaction)
                 #self.logger.debug(f"Processed swap event {swap['id']} for transaction {transaction.id}")
                 
-            self.logger.debug(f"Processed {len(swap_transactions)} swap events for transaction {transaction.id}")
+            #self.logger.debug(f"Processed {len(swap_transactions)} swap events for transaction {transaction.id}")
         except Exception as e:
             self.logger.error(f"Error processing swap events for transaction {transaction.id}: {str(e)}", exc_info=True)
             raise e
@@ -115,6 +119,10 @@ class UniswapV3Processor(BaseProcessor):
                     id = mint['id'],
                     token0_symbol = mint['pool']['token0']['symbol'],
                     token1_symbol = mint['pool']['token1']['symbol'],
+                    token0_name = mint['pool']['token0']['name'],
+                    token1_name = mint['pool']['token1']['name'],
+                    token0_id = mint['pool']['token0']['id'],
+                    token1_id = mint['pool']['token1']['id'],
                     amount0 = mint['amount0'],
                     amount1 = mint['amount1'],
                     amount_usd = mint['amountUSD'],
@@ -150,6 +158,10 @@ class UniswapV3Processor(BaseProcessor):
                     id = burn['id'],
                     token0_symbol = burn['pool']['token0']['symbol'],
                     token1_symbol = burn['pool']['token1']['symbol'],
+                    token0_id = burn['pool']['token0']['id'],
+                    token1_id = burn['pool']['token1']['id'],
+                    token0_name = burn['pool']['token0']['name'],
+                    token1_name = burn['pool']['token1']['name'],
                     amount0 = burn['amount0'],
                     amount1 = burn['amount1'],
                     amount_usd = burn['amountUSD'],
@@ -218,13 +230,13 @@ class UniswapV3Processor(BaseProcessor):
         
         return flash_transactions
     
-    def _process_tokens(self, tokens_data: List[Dict]) -> List[Token]:
+    def _process_tokens(self, tokens_data: List[Dict]) -> List[Tuple]:
         try:
             tokens = [
-                Token(
-                    id=token['id'],
-                    symbol=token['symbol'],
-                    name=token['name']
+                (
+                    token['id'],
+                    token['symbol'],
+                    token['name']
                 )
                 for token in tokens_data.get("data", {}).get("tokens", [])
             ]  

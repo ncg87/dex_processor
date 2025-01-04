@@ -28,11 +28,13 @@ def get_uniswap_v3_query():
                 id
                 symbol
                 decimals
+                name
                 }
                 token1 {
                 id
                 symbol
                 decimals
+                name
                 }
                 feeTier
                 liquidity
@@ -61,11 +63,13 @@ def get_uniswap_v3_query():
                 id
                 symbol
                 decimals
+                name
                 }
                 token1 {
                 id
                 symbol
                 decimals
+                name
                 }
                 feeTier
                 liquidity
@@ -99,11 +103,13 @@ def get_uniswap_v3_query():
                 id
                 symbol
                 decimals
+                name
                 }
                 token1 {
                 id
                 symbol
                 decimals
+                name
                 }
                 feeTier
                 liquidity
@@ -134,11 +140,13 @@ def get_uniswap_v3_query():
                 id
                 symbol
                 decimals
+                name
                 }
                 token1 {
                 id
                 symbol
                 decimals
+                name
                 }
                 feeTier
                 liquidity
@@ -166,11 +174,13 @@ def get_uniswap_v3_query():
                 id
                 symbol
                 decimals
+                name
                 }
                 token1 {
                 id
                 symbol
                 decimals
+                name
                 }
                 feeTier
                 liquidity
@@ -232,11 +242,13 @@ def get_uniswap_v2_query():
                 id
                 symbol
                 decimals
+                name
                 }
                 token1 {
                 id
                 symbol
                 decimals
+                name
                 }
             }
             sender
@@ -263,11 +275,13 @@ def get_uniswap_v2_query():
                 id
                 symbol
                 decimals
+                name
                 }
                 token1 {
                 id
                 symbol
                 decimals
+                name
                 }
             }
             sender
@@ -294,11 +308,13 @@ def get_uniswap_v2_query():
                 id
                 symbol
                 decimals
-                }
+                name
+                    }
                 token1 {
                 id
                 symbol
                 decimals
+                name
                 }
             }
             liquidity
@@ -311,6 +327,17 @@ def get_uniswap_v2_query():
             feeTo
             feeLiquidity
             }
+        }
+    }
+    """
+def get_uniswap_v2_tokens_query():
+    """Fetch all tokens from the specified DEX subgraph."""
+    return """
+    query ($first: Int!, $skip: Int!) {
+        tokens(first: $first, skip: $skip, orderBy: id, orderDirection: desc) {
+            id
+            symbol
+            name
         }
     }
     """

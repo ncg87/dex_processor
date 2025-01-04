@@ -17,6 +17,8 @@ class PostgresSchema:
                 dex_id TEXT NOT NULL,
                 token0_symbol TEXT NOT NULL,
                 token1_symbol TEXT NOT NULL,
+                token0_id TEXT NOT NULL,
+                token1_id TEXT NOT NULL,
                 amount0 TEXT NOT NULL,
                 amount1 TEXT NOT NULL,
                 amount_usd TEXT NOT NULL,
@@ -38,6 +40,8 @@ class PostgresSchema:
                 dex_id TEXT NOT NULL,
                 token0_symbol TEXT NOT NULL,
                 token1_symbol TEXT NOT NULL,
+                token0_id TEXT NOT NULL,
+                token1_id TEXT NOT NULL,
                 amount0 TEXT NOT NULL,
                 amount1 TEXT NOT NULL,
                 amount_usd TEXT NOT NULL,
@@ -58,6 +62,8 @@ class PostgresSchema:
                 dex_id TEXT NOT NULL,
                 token0_symbol TEXT NOT NULL,
                 token1_symbol TEXT NOT NULL,
+                token0_id TEXT NOT NULL,
+                token1_id TEXT NOT NULL,
                 amount0 TEXT NOT NULL,
                 amount1 TEXT NOT NULL,
                 amount_usd TEXT NOT NULL,
@@ -92,16 +98,20 @@ class PostgresSchema:
             CREATE INDEX IF NOT EXISTS idx_swaps_dex ON swaps (dex_id);
             CREATE INDEX IF NOT EXISTS idx_swaps_parent_tx ON swaps USING GIN (parent_transaction);
             CREATE INDEX IF NOT EXISTS idx_swaps_timestamp ON swaps (timestamp DESC);
+            CREATE INDEX IF NOT EXISTS idx_swaps_sender ON swaps (sender);
+            CREATE INDEX IF NOT EXISTS idx_swaps_recipient ON swaps (recipient);
             
             CREATE INDEX IF NOT EXISTS idx_mints_tokens ON mints (token0_symbol, token1_symbol);
             CREATE INDEX IF NOT EXISTS idx_mints_dex ON mints (dex_id);
             CREATE INDEX IF NOT EXISTS idx_mints_parent_tx ON mints USING GIN (parent_transaction);
             CREATE INDEX IF NOT EXISTS idx_mints_timestamp ON mints (timestamp DESC);
+            CREATE INDEX IF NOT EXISTS idx_mints_owner ON mints (owner);
             
             CREATE INDEX IF NOT EXISTS idx_burns_tokens ON burns (token0_symbol, token1_symbol);
             CREATE INDEX IF NOT EXISTS idx_burns_dex ON burns (dex_id);
             CREATE INDEX IF NOT EXISTS idx_burns_parent_tx ON burns USING GIN (parent_transaction);
             CREATE INDEX IF NOT EXISTS idx_burns_timestamp ON burns (timestamp DESC);
+            CREATE INDEX IF NOT EXISTS idx_burns_owner ON burns (owner);
             '''
         ]
 

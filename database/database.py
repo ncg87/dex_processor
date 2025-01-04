@@ -76,7 +76,10 @@ class Database:
         except Exception as e:
             logger.error(f"Error ensuring partitions: {str(e)}", exc_info=True)
             raise
-
+    
+    # TODO: Make an separate function for inserting events, so that it can be used for other pipelines as well
+    # Make a seperate file for the DB operations
+    
     def insert_transaction_batch(self, events_list: List[List]):
         """
         Insert a batch of events into their respective tables
@@ -116,6 +119,20 @@ class Database:
             # Get the events from the list
             swaps, mints, burns, collects, flashs = events_list
             logging.debug("Executing batch insert with SQL: ...")
+            
+            # Helper function to collect token metadata
+            def collect_token_metadata(events):
+                metadata = set()
+                for event in events:
+                    metadata.add((event.token0_id, event.token0_symbol, event.token0_name))
+                    metadata.add((event.token1_id, event.token1_symbol, event.token1_name))
+                return metadata
+            
+            # Collect token metadata from all event types
+            token_metadata = set()
+            for event_list in [swaps, mints, burns]:
+                token_metadata.update(collect_token_metadata(event_list))
+            
             # Insert swaps
             if swaps:
                 swap_values = [
@@ -126,6 +143,8 @@ class Database:
                         swap.dex_id,
                         swap.token0_symbol,
                         swap.token1_symbol,
+                        swap.token0_id,
+                        swap.token1_id,
                         swap.amount0,
                         swap.amount1,
                         swap.amount_usd,
@@ -141,8 +160,8 @@ class Database:
                     """
                     INSERT INTO swaps (
                         id, parent_transaction, timestamp, dex_id,
-                        token0_symbol, token1_symbol, amount0, amount1,
-                        amount_usd, sender, recipient, origin,
+                        token0_symbol, token1_symbol, token0_id, token1_id,
+                        amount0, amount1, amount_usd, sender, recipient, origin,
                         fee_tier, liquidity
                     ) VALUES %s
                     ON CONFLICT (timestamp, id) DO NOTHING;
@@ -160,6 +179,8 @@ class Database:
                         mint.dex_id,
                         mint.token0_symbol,
                         mint.token1_symbol,
+                        mint.token0_id,
+                        mint.token1_id,
                         mint.amount0,
                         mint.amount1,
                         mint.amount_usd,
@@ -174,8 +195,9 @@ class Database:
                     """
                     INSERT INTO mints (
                         id, parent_transaction, timestamp, dex_id,
-                        token0_symbol, token1_symbol, amount0, amount1,
-                        amount_usd, owner, origin, fee_tier, liquidity
+                        token0_symbol, token1_symbol, token0_id, token1_id,
+                        amount0, amount1, amount_usd, owner, origin,
+                        fee_tier, liquidity
                     ) VALUES %s
                     ON CONFLICT (timestamp, id) DO NOTHING
                     """,
@@ -192,6 +214,8 @@ class Database:
                         burn.dex_id,
                         burn.token0_symbol,
                         burn.token1_symbol,
+                        burn.token0_id,
+                        burn.token1_id,
                         burn.amount0,
                         burn.amount1,
                         burn.amount_usd,
@@ -206,8 +230,9 @@ class Database:
                     """
                     INSERT INTO burns (
                         id, parent_transaction, timestamp, dex_id,
-                        token0_symbol, token1_symbol, amount0, amount1,
-                        amount_usd, owner, origin, fee_tier, liquidity
+                        token0_symbol, token1_symbol, token0_id, token1_id,
+                        amount0, amount1, amount_usd, owner, origin,
+                        fee_tier, liquidity
                     ) VALUES %s
                     ON CONFLICT (timestamp, id) DO NOTHING
                     """,
@@ -217,38 +242,40 @@ class Database:
             # Note: Collect and Flash events are currently passed as empty lists
             # Add implementation when needed
             
+            # Insert token metadata
+            if token_metadata:
+                self.insert_token_metadata(list(token_metadata))
+
         except Exception as e:
             logger.error(f"Error in batch insert: {str(e)}", exc_info=True)
             raise
-    
-    def upsert_token_metadata(self, tokens: List[Token]):
+    # Adjsut pipeline so that it doesn't need a token object
+    def insert_token_metadata(self, tokens: List[tuple]):
         """
-        Insert or update token metadata.
+        Insert token metadata.
 
         Args:
-            tokens: List of Token objects with metadata (id, symbol, name).
+            tokens: List of tuples containing token metadata (id, symbol, name).
+        
         """
         insert_query = """
         INSERT INTO token_metadata (id, symbol, name)
         VALUES %s
-        ON CONFLICT (id) DO UPDATE
-        SET symbol = EXCLUDED.symbol,
-            name = EXCLUDED.name,
-            updated_at = CURRENT_TIMESTAMP;
+        ON CONFLICT (id) DO NOTHING
+        RETURNING id
         """
-        # Prepare values for batch insertion
-        values = [(token.id, token.symbol, token.name) for token in tokens]
-
         try:
             with self._get_connection() as conn:
                 with conn.cursor() as cur:
-                    execute_values(cur, insert_query, values)
-                conn.commit()
-                logger.info(f"Upserted {len(tokens)} tokens into token_metadata.")
+                    # Execute batch insertion and fetch the count of new tokens
+                    execute_values(cur, insert_query, tokens)
+                    cur.execute("SELECT COUNT(*) FROM token_metadata WHERE id IN %s", (tuple(t[0] for t in tokens),))
+                    new_tokens = cur.fetchall()
+                    conn.commit()
+                    logger.info(f"Inserted {new_tokens} new tokens into token_metadata.")
         except Exception as e:
-            logger.error(f"Error upserting token metadata: {str(e)}", exc_info=True)
+            logger.error(f"Error inserting token metadata: {str(e)}", exc_info=True)
             raise
-
         
     def get_events_by_time(
         self,
@@ -308,6 +335,19 @@ class Database:
             return tokens
         except Exception as e:
             logger.error(f"Error fetching tokens by symbol: {str(e)}", exc_info=True)
+            raise
+    def get_token_by_id(self, token_id: str) -> list:
+        """
+        Retrieve a token by its ID.
+        """
+        query = "SELECT * FROM tokens WHERE id = %s"
+        try:
+            with self._get_connection() as conn:
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    cur.execute(query, (token_id,))
+                    return cur.fetchall()
+        except Exception as e:
+            logger.error(f"Error fetching token by ID: {str(e)}", exc_info=True)
             raise
 
 

@@ -8,7 +8,8 @@ logger = logging.getLogger(__name__)
 
 class ProcessorFactory:
     _processors: Dict[str, type[BaseProcessor]] = {
-        'uniswap_v3': UniswapV3Processor
+        'uniswap_v3': UniswapV3Processor,
+        'uniswap_v2': UniswapV2Processor
     }
     
     @classmethod

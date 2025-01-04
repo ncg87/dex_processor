@@ -14,7 +14,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 QUERY_INTERVAL = int(Settings.QUERY_INTERVAL)
-TOKEN_QUERY_INTERVAL = int(Settings.TOKEN_QUERY_INTERVAL)
 
 
 async def run_pipeline(pipeline, start_time, end_time):
@@ -52,7 +51,7 @@ async def query_loop(pipelines):
     Continuously query data at regular intervals
     """
     while True:
-        start_time = datetime.now() - timedelta(seconds=QUERY_INTERVAL)
+        start_time = datetime.now() - timedelta(seconds=int(QUERY_INTERVAL * 1.5))
         end_time = datetime.now()
 
         tasks = []
@@ -63,23 +62,20 @@ async def query_loop(pipelines):
         await asyncio.gather(*tasks)
 
         logger.info(f"Sleeping for {QUERY_INTERVAL} seconds...")
-        await asyncio.sleep(TOKEN_QUERY_INTERVAL)
+        await asyncio.sleep(QUERY_INTERVAL)
 
 async def query_tokens(pipelines):
     """
     Query tokens at regular intervals
     """
-    while True:
-        for pipeline in pipelines.values():
-            try:
-                logger.info(f"Starting token query for {pipeline.__class__.__name__}")
-                await asyncio.to_thread(pipeline.process_tokens)
-                logger.info(f"Completed token query for {pipeline.__class__.__name__}")
-            except Exception as e:
-                logger.error(f"Error querying tokens for {pipeline.__class__.__name__}: {e}", exc_info=True)
-        
-        logger.info(f"Sleeping for {TOKEN_QUERY_INTERVAL} seconds before next token query...")
-        await asyncio.sleep(TOKEN_QUERY_INTERVAL)
+    for pipeline in pipelines.values():
+        try:
+            logger.info(f"Starting token query for {pipeline.__class__.__name__}")
+            await asyncio.to_thread(pipeline.process_tokens)
+            logger.info(f"Completed token query for {pipeline.__class__.__name__}")
+        except Exception as e:
+            logger.error(f"Error querying tokens for {pipeline.__class__.__name__}: {e}", exc_info=True)
+    
 
 
 async def main():

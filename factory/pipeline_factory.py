@@ -1,5 +1,6 @@
 import os
 from pipelines.uniswap_v3_pipeline import UniswapV3Pipeline
+from pipelines.uniswap_v2_pipeline import UniswapV2Pipeline
 from database import Database
 from .processor_factory import ProcessorFactory
 from .querier_factory import QuerierFactory
@@ -9,6 +10,7 @@ class PipelineFactory:
     def get_pipeline(dex_name, db):
         pipelines = {
             "uniswap_v3": UniswapV3Pipeline,
+            "uniswap_v2": UniswapV2Pipeline,
         }
         if dex_name in pipelines:
             querier = QuerierFactory.get_querier(dex_name)
