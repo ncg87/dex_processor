@@ -67,7 +67,7 @@ class VolumeTracker:
         dex_volumes = {}
 
         for event_type in ["swaps"]:
-            events = self.db.get_crypto_events_by_time(event_type, crypto_id, start_time, end_time)
+            events = self.db.get_crypto_events_by_time(event_type, start_time, end_time, crypto_id)
             for event in events:
                 dex_id = event['dex_id']
                 amount_usd = float(event['amount_usd'])
