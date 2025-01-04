@@ -63,8 +63,8 @@ async def get_volume(
         logger.error(f"Error fetching volume data: {str(e)}", exc_info=True)
         return {"error": str(e)}
 
-@app.get("/tokens")
-def get_tokens(symbol: Optional[str] = None, token_id: Optional[str] = None, api_key: str = Depends(validate_api_key)):
+@app.get("/token_metadata")
+def get_token_metadata(token_id: Optional[str] = None, symbol: Optional[str] = None, name: Optional[str] = None, api_key: str = Depends(validate_api_key)):
     """
     Retrieve token data by symbol or token ID.
     """
