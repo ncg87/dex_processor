@@ -326,7 +326,7 @@ class Database:
                 with conn.cursor(cursor_factory=RealDictCursor) as cur:
                     cur.execute(query)
                     tokens = cur.fetchall()
-            return tokens
+            return [dict(token) for token in tokens]
         except Exception as e:
             logger.error(f"Error fetching tokens: {str(e)}", exc_info=True)
             raise
@@ -341,7 +341,7 @@ class Database:
                 with conn.cursor(cursor_factory=RealDictCursor) as cur:
                     cur.execute(query, (symbol,))
                     tokens = cur.fetchall()
-            return tokens
+            return [dict(token) for token in tokens]
         except Exception as e:
             logger.error(f"Error fetching tokens by symbol: {str(e)}", exc_info=True)
             raise
@@ -354,7 +354,7 @@ class Database:
             with self._get_connection() as conn:
                 with conn.cursor(cursor_factory=RealDictCursor) as cur:
                     cur.execute(query, (token_id,))
-                    return cur.fetchall()
+                    return dict(cur.fetchall())
         except Exception as e:
             logger.error(f"Error fetching token by ID: {str(e)}", exc_info=True)
             raise
