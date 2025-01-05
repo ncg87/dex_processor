@@ -1,20 +1,44 @@
 from typing import Dict, Any, List, Tuple
+from database import SwapEvent, MintEvent, BurnEvent, CollectEvent, FlashEvent, BaseTransaction
 from .base_processor import BaseProcessor
-from database.models import BaseTransaction, SwapEvent, MintEvent, CollectEvent, BurnEvent, FlashEvent, Token
 import logging
 
 logger = logging.getLogger(__name__)
 
-
-class UniswapV3Processor(BaseProcessor):
+class AerodromeProcessor(BaseProcessor):
     def __init__(self):
-        super().__init__('uniswap_v3')
-        self.logger.info("Initialized UniswapV3Processor...")
-    
+        super().__init__('aerodrome')
+        self.logger.info("Initialized AerodromeProcessor...")
+        
+    def process_response(self, transaction_data: Dict[str, Any]) -> Dict:
+        # Create base transaction
+        transaction = BaseTransaction(
+            id=transaction_data['id'],
+            dex_id=self.dex_id,
+            block_number=int(transaction_data['blockNumber']),
+            timestamp=int(transaction_data['timestamp']),
+        )
+        
+        #self.logger.debug(f"Processing transaction {transaction.id} from block {transaction.block_number}")
+        
+        # Process events
+        events = {
+            'swaps': self._process_swaps(transaction_data.get('swaps', []), transaction),
+            'mints': self._process_mints(transaction_data.get('mints', []), transaction),
+            'burns': self._process_burns(transaction_data.get('burns', []), transaction),
+            'collects': self._process_collects(transaction_data.get('collects', []), transaction),
+            'flashs': self._process_flashs(transaction_data.get('flashes', []), transaction)
+        }
+        #self.logger.debug(f"Processed events for transaction {transaction.id}: "
+        #                    f"swaps={len(events['swaps'])}, mints={len(events['mints'])}, "
+        #                    f"burns={len(events['burns'])}, collects={len(events['collects'])}, "
+        #                    f"flashs={len(events['flashs'])}")
+        return events
+
     def process_bulk_responses(self, response_data: Dict[str, Any]) -> List[Dict[str, list]]:
         self.logger.debug(f"Processing bulk responses on {self.dex_id} with {len(response_data.get('data', {}).get('transactions', []))} transactions")
         # Initialize results for each event type
-        results = [[],[],[],[],[]]
+        results = [[],[],[],[],[]]  
         try:
             # Iterate through each transaction in the response
             for transaction_data in response_data['data']['transactions']:
@@ -33,35 +57,6 @@ class UniswapV3Processor(BaseProcessor):
             raise e
         
         return results
-
-    def process_response(self, transaction_data: Dict[str, Any]) -> Dict:
-        
-        # Create base transaction
-        transaction = BaseTransaction(
-            id=transaction_data['id'],
-            dex_id=self.dex_id,
-            block_number=int(transaction_data['blockNumber']),
-            timestamp=int(transaction_data['timestamp']),
-            gas_used=transaction_data['gasUsed'],
-            gas_price=transaction_data['gasPrice']
-        )
-        
-        #self.logger.debug(f"Processing transaction {transaction.id} from block {transaction.block_number}")
-        
-        # Process events
-        events = {
-            'swaps': self._process_swaps(transaction_data.get('swaps', []), transaction),
-            'mints': self._process_mints(transaction_data.get('mints', []), transaction),
-            'burns': self._process_burns(transaction_data.get('burns', []), transaction),
-            'collects': self._process_collects(transaction_data.get('collects', []), transaction),
-            'flashs': self._process_flashs(transaction_data.get('flashed', []), transaction)
-        }
-        #self.logger.debug(f"Processed events for transaction {transaction.id}: "
-        #                    f"swaps={len(events['swaps'])}, mints={len(events['mints'])}, "
-        #                    f"burns={len(events['burns'])}, collects={len(events['collects'])}, "
-        #                    f"flashs={len(events['flashs'])}")
-        
-        return events
     
     def _process_swaps(self, swaps_data: List[Dict], transaction: BaseTransaction) -> List[SwapEvent]:
         
@@ -88,7 +83,6 @@ class UniswapV3Processor(BaseProcessor):
                     amount_usd = swap['amountUSD'],
                     sender = swap['sender'],
                     recipient = swap['recipient'],
-                    origin = swap['origin'],
                     fee_tier = swap['pool']['feeTier'],
                     liquidity = swap['pool']['liquidity'],
                     dex_id = self.dex_id
@@ -127,7 +121,7 @@ class UniswapV3Processor(BaseProcessor):
                     amount1 = mint['amount1'],
                     amount_usd = mint['amountUSD'],
                     owner = mint['owner'],
-                    origin = mint['origin'],
+                    origin = mint['sender'],
                     fee_tier = mint['pool']['feeTier'],
                     liquidity = mint['pool']['liquidity'],
                     dex_id = self.dex_id
@@ -246,5 +240,3 @@ class UniswapV3Processor(BaseProcessor):
             raise e
         
         return tokens
-
-

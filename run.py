@@ -82,9 +82,9 @@ async def main():
     try:
         # Initialize database
         db = Database(Settings.POSTGRES_CONFIG)
-
+        
         # Load pipelines using the factory
-        pipelines = PipelineFactory.load_pipelines(db)
+        pipelines = PipelineFactory.load_pipelines(db, Settings.DEXES)
         if not pipelines:
             logger.error("No pipelines loaded. Ensure DEXES are configured correctly.")
             return

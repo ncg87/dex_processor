@@ -341,3 +341,151 @@ def get_uniswap_v2_tokens_query():
         }
     }
     """
+# Aerodrome Queries #
+def get_aerodrome_query():
+    """
+    Query to fetch transactions within a time period from Aerodrome.
+    """
+    return """
+    query GetAerodromeTransactions($startTimestamp: Int!, $endTimestamp: Int!, $skip: Int!) {
+        transactions(
+            first: 1000
+            skip: $skip
+            where: { timestamp_gte: $startTimestamp, timestamp_lte: $endTimestamp }
+            orderBy: timestamp
+            orderDirection: asc
+        ) {
+            id
+            blockNumber
+            timestamp
+            gasUsed
+            gasPrice
+            mints {
+            id
+            timestamp
+            pool {
+                id
+                token0 {
+                id
+                symbol
+                decimals
+                name
+                }
+                token1 {
+                id
+                symbol
+                decimals
+                name
+                }
+                feeTier
+                liquidity
+            }
+            owner
+            sender
+            amount0
+            amount1
+            amountUSD
+            tickLower
+            tickUpper
+            logIndex
+            }
+            burns {
+            id
+            timestamp
+            pool {
+                id
+                token0 {
+                id
+                symbol
+                decimals
+                name
+                }
+                token1 {
+                id
+                symbol
+                decimals
+                name
+                }
+                feeTier
+                liquidity
+            }
+            owner
+            origin
+            amount0
+            amount1
+            amountUSD
+            tickLower
+            tickUpper
+            logIndex
+            }
+            swaps {
+            id
+            timestamp
+            pool {
+                id
+                token0 {
+                id
+                symbol
+                decimals
+                name
+                }
+                token1 {
+                id
+                symbol
+                decimals
+                name
+                }
+                feeTier
+                liquidity
+            }
+            sender
+            recipient
+            amount0
+            amount1
+            amountUSD
+            sqrtPriceX96
+            tick
+            logIndex
+            }
+            collects {
+            id
+            timestamp
+            pool {
+                id
+                token0 {
+                id
+                symbol
+                decimals
+                name
+                }
+            }
+            }
+            flashed {
+            id
+            timestamp
+            pool {
+                id
+                token0 {
+                id
+                symbol
+                decimals
+                name
+                }
+            }
+            }
+        }    
+    }
+
+    """
+    
+def get_aerodrome_tokens_query():
+    """Fetch all tokens from the specified DEX subgraph."""
+    return """
+    query ($first: Int!, $skip: Int!) {
+        tokens(first: $first, skip: $skip, orderBy: id, orderDirection: desc) {
+            id
+            symbol
+            name
+        }
+    }
+    """

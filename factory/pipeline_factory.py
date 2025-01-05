@@ -1,9 +1,8 @@
 import os
-from pipelines.uniswap_v3_pipeline import UniswapV3Pipeline
-from pipelines.uniswap_v2_pipeline import UniswapV2Pipeline
 from database import Database
 from .processor_factory import ProcessorFactory
 from .querier_factory import QuerierFactory
+from pipelines import AerodromePipeline, UniswapV2Pipeline, UniswapV3Pipeline
 
 class PipelineFactory:
     @staticmethod
@@ -11,6 +10,7 @@ class PipelineFactory:
         pipelines = {
             "uniswap_v3": UniswapV3Pipeline,
             "uniswap_v2": UniswapV2Pipeline,
+            "aerodrome": AerodromePipeline
         }
         if dex_name in pipelines:
             querier = QuerierFactory.get_querier(dex_name)
@@ -19,9 +19,7 @@ class PipelineFactory:
         raise ValueError(f"No pipeline available for DEX: {dex_name}")
 
     @staticmethod
-    def load_pipelines(db):
-        # Load DEXes from the environment
-        dexes = os.getenv("DEXES", "").split(",")
+    def load_pipelines(db, dexes):
         pipelines = {}
         for dex_name in dexes:
             dex_name = dex_name.strip()

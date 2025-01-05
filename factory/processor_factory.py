@@ -1,15 +1,14 @@
 import logging
 from typing import Dict
-from processors.base_processor import BaseProcessor
-from processors.uniswap_v3_processor import UniswapV3Processor
-from processors.uniswap_v2_processor import UniswapV2Processor
+from processors import UniswapV3Processor, UniswapV2Processor, AerodromeProcessor, BaseProcessor
 
 logger = logging.getLogger(__name__)
 
 class ProcessorFactory:
     _processors: Dict[str, type[BaseProcessor]] = {
         'uniswap_v3': UniswapV3Processor,
-        'uniswap_v2': UniswapV2Processor
+        'uniswap_v2': UniswapV2Processor,
+        'aerodrome': AerodromeProcessor
     }
     
     @classmethod

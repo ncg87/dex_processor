@@ -72,7 +72,7 @@ class Database:
                     )
                     for query in queries:
                         cur.execute(query)
-            logger.info(f"Ensured partitions exist from {start_date} to {end_date}")
+            logger.debug(f"Ensured partitions exist from {start_date} to {end_date}")
         except Exception as e:
             logger.error(f"Error ensuring partitions: {str(e)}", exc_info=True)
             raise
@@ -155,8 +155,8 @@ class Database:
                         swap.origin,
                         swap.fee_tier,
                         swap.liquidity
-                    ) for swap in swaps
-                ]
+                        ) for swap in swaps if swap.amount0 is not None or swap.amount1 is not None
+                    ]
                 execute_values(
                     cur,
                     """
@@ -193,7 +193,7 @@ class Database:
                         mint.origin,
                         mint.fee_tier,
                         mint.liquidity
-                    ) for mint in mints
+                    ) for mint in mints if mint.amount0 is not None or mint.amount1 is not None
                 ]
                 execute_values(
                     cur,
@@ -231,7 +231,7 @@ class Database:
                         burn.origin,
                         burn.fee_tier,
                         burn.liquidity
-                    ) for burn in burns
+                    ) for burn in burns if burn.amount0 is not None or burn.amount1 is not None
                 ]
                 execute_values(
                     cur,

@@ -16,6 +16,8 @@ class Settings:
     }
     BATCH_SIZE = 1000
     
+    DEXES = os.getenv('DEXES').split(',')
+    
     # Time-based partition settings
     PARTITION_INTERVAL = timedelta(days=90)  # 3-month partitions
     

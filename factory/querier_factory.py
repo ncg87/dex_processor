@@ -1,8 +1,8 @@
 import logging
 from typing import Dict
-from query.base_querier import BaseQuerier
-from query.uniswap_v3_querier import UniswapV3Querier
-from query.uniswap_v2_querier import UniswapV2Querier
+
+from query import BaseQuerier, UniswapV3Querier, UniswapV2Querier, AerodromeQuerier
+
 from config.settings import Settings
 
 logger = logging.getLogger(__name__)
@@ -16,7 +16,11 @@ class QuerierFactory:
         'uniswap_v2': (
             UniswapV2Querier,
             f"https://gateway.thegraph.com/api/{Settings.API_KEY}/subgraphs/id/A3Np3RQbaBA6oKJgiwDJeo5T3zrYfGHPWFYayMwtNDum"
-        )
+        ),
+        'aerodrome': (
+            AerodromeQuerier,
+            f"https://gateway.thegraph.com/api/{Settings.API_KEY}/subgraphs/id/GENunSHWLBXm59mBSgPzQ8metBEp9YDfdqwFr91Av1UM"
+        ),
     }
     
     @classmethod
