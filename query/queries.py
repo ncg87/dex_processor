@@ -489,3 +489,150 @@ def get_aerodrome_tokens_query():
         }
     }
     """
+    
+# Quickswap V3 Queries #
+def get_quickswap_v3_query():
+    """
+    Query to fetch transactions within a time period from Quickswap V3.
+    """
+    return """
+    query GetQuickswapV3Transactions($startTimestamp: Int!, $endTimestamp: Int!, $skip: Int!) {
+        transactions(
+            first: 1000
+            skip: $skip
+            where: { timestamp_gte: $startTimestamp, timestamp_lte: $endTimestamp }
+            orderBy: timestamp
+            orderDirection: asc
+        ) {
+            id
+            blockNumber
+            timestamp
+            gasPrice
+            mints {
+            id
+            timestamp
+            pool {
+                id
+                token0 {
+                id
+                symbol
+                decimals
+                name
+                }
+                token1 {
+                id
+                symbol
+                decimals
+                name
+                }
+                fee
+                liquidity
+            }
+            owner
+            sender
+            origin
+            amount0
+            amount1
+            amountUSD
+            tickLower
+            tickUpper
+            logIndex
+            }
+            burns {
+            id
+            timestamp
+            pool {
+                id
+                token0 {
+                id
+                symbol
+                decimals
+                name
+                }
+                token1 {
+                id
+                symbol
+                decimals
+                name
+                }
+                fee
+                liquidity
+            }
+            owner
+            origin
+            amount0
+            amount1
+            amountUSD
+            tickLower
+            tickUpper
+            logIndex
+            }
+            swaps {
+            id
+            timestamp
+            pool {
+                id
+                token0 {
+                id
+                symbol
+                decimals
+                name
+                }
+                token1 {
+                id
+                symbol
+                decimals
+                name
+                }
+                fee
+                liquidity
+            }
+            sender
+            recipient
+            amount0
+            amount1
+            amountUSD
+            tick
+            logIndex
+            }
+            collects {
+            id
+            timestamp
+            pool {
+                id
+                token0 {
+                id
+                symbol
+                decimals
+                name
+                }
+            }
+            }
+            flashed {
+            id
+            timestamp
+            pool {
+                id
+                token0 {
+                id
+                symbol
+                decimals
+                name
+                }
+            }
+            }
+        }    
+    }
+    """
+
+def get_quickswap_v3_tokens_query():
+    """Fetch all tokens from the specified DEX subgraph."""
+    return """
+    query ($first: Int!, $skip: Int!) {
+        tokens(first: $first, skip: $skip, orderBy: id, orderDirection: desc) {
+            id
+            symbol
+            name
+        }
+    }
+    """

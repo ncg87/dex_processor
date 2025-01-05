@@ -1,7 +1,7 @@
 import logging
 from typing import Dict
 
-from query import BaseQuerier, UniswapV3Querier, UniswapV2Querier, AerodromeQuerier
+from query import BaseQuerier, UniswapV3Querier, UniswapV2Querier, AerodromeQuerier, QuickswapV3Querier
 
 from config.settings import Settings
 
@@ -20,6 +20,10 @@ class QuerierFactory:
         'aerodrome': (
             AerodromeQuerier,
             f"https://gateway.thegraph.com/api/{Settings.API_KEY}/subgraphs/id/GENunSHWLBXm59mBSgPzQ8metBEp9YDfdqwFr91Av1UM"
+        ),
+        'quickswap_v3': (
+            QuickswapV3Querier,
+            f"https://gateway.thegraph.com/api/{Settings.API_KEY}/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g"
         ),
     }
     

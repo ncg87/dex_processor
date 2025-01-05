@@ -21,7 +21,7 @@ async def run_pipeline(pipeline, start_time, end_time):
     Run the pipeline for a given time range asynchronously
     """
     try:
-        logger.info(f"Starting pipeline for {pipeline.__class__.__name__} from {start_time} to {end_time}")
+        logger.info(f"Starting pipeline for {pipeline.dexId} from {start_time} to {end_time}")
         stats = await asyncio.to_thread(pipeline.process_time_range, start_time, end_time)
         logger.info(
             f"Pipeline completed: {stats['transactions_processed']} transactions, "
@@ -70,11 +70,11 @@ async def query_tokens(pipelines):
     """
     for pipeline in pipelines.values():
         try:
-            logger.info(f"Starting token query for {pipeline.__class__.__name__}")
+            logger.info(f"Starting token query for {pipeline.dexId}")
             await asyncio.to_thread(pipeline.process_tokens)
-            logger.info(f"Completed token query for {pipeline.__class__.__name__}")
+            logger.info(f"Completed token query for {pipeline.dexId}")
         except Exception as e:
-            logger.error(f"Error querying tokens for {pipeline.__class__.__name__}: {e}", exc_info=True)
+            logger.error(f"Error querying tokens for {pipeline.dexId}: {e}", exc_info=True)
     
 
 
